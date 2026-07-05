@@ -1,0 +1,13 @@
+
+:root {
+    --brand-primary: #1d4ed8;
+    --brand-primary-dark: #1e3a8a;
+}
+.navbar-primary { background-color: var(--brand-primary) !important; }
+.sidebar-dark-primary { background-color: #1f2d3d; }
+a { color: var(--brand-primary); }
+.btn-primary, .bg-primary { background-color: var(--brand-primary) !important; border-color: var(--brand-primary) !important; }
+.nav-sidebar .nav-link.active { background-color: var(--brand-primary) !important; }
+.card-primary:not(.card-outline) > .card-header { background-color: var(--brand-primary); }
+.login-page, .register-page { background: #eef2f7; }
+.small-box .icon { color: rgba(255,255,255,.25); }
