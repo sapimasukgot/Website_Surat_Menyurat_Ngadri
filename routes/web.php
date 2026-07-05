@@ -5,7 +5,7 @@ use App\Http\Controllers\PendudukController;
 use App\Http\Controllers\SuratController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('dashboard'));
+Route::get('/', fn() => redirect()->route('dashboard'));
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -27,4 +27,4 @@ Route::middleware('auth')->group(function () {
     Route::resource('surat', SuratController::class);
 });
 
-re
+require __DIR__ . '/auth.php';
