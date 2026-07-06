@@ -8,7 +8,7 @@
         <div class="login-split-brand">
             <div class="brand-showcase">
                 <img src="<?php echo e(asset('images/logo.png')); ?>" alt="Logo <?php echo e(config('desa.nama')); ?>" class="brand-showcase-logo">
-                <h1>Halo <?php echo e(config('desa.nama')); ?>! 👋</h1>
+                <h1>Halo <?php echo e(config('desa.nama')); ?>!</h1>
                 <p>Sistem Administrasi Surat Menyurat Terpadu. Mempermudah pelayanan surat penduduk secara efisien, cepat,
                     dan transparan.</p>
             </div>

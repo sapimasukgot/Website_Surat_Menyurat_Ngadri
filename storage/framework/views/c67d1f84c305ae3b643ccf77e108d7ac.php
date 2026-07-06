@@ -29,7 +29,9 @@ unset($__errorArgs, $__bag); ?>" required>
                                     <option value="">— Pilih Jenis Surat —</option>
                                     <?php $__currentLoopData = $jenisList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <option value="<?php echo e($j->id); ?>" <?php if(old('jenis_surat_id') == $j->id): echo 'selected'; endif; ?>>
-                                            <?php echo e($j->nama_surat); ?></option>
+                                            <?php echo e($j->nama_surat); ?>
+
+                                        </option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                                 <?php $__errorArgs = ['jenis_surat_id'];
@@ -64,7 +66,9 @@ unset($__errorArgs, $__bag); ?>"
                                 <option value="">— Pilih Penduduk —</option>
                                 <?php $__currentLoopData = $penduduks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <option value="<?php echo e($p->id); ?>" <?php if(old('penduduk_id') == $p->id): echo 'selected'; endif; ?>><?php echo e($p->nik); ?> —
-                                        <?php echo e($p->nama_lengkap); ?></option>
+                                        <?php echo e($p->nama_lengkap); ?>
+
+                                    </option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                             <?php $__errorArgs = ['penduduk_id'];
@@ -109,6 +113,51 @@ unset($__errorArgs, $__bag); ?>
         </div>
     </div>
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('styles'); ?>
+    <style>
+        /* Mengamankan pembungkus TomSelect */
+        .ts-wrapper.tom-select {
+            position: relative !important;
+        }
+
+        /* Memaksa dropdown melayang di atas konten lain */
+        .ts-dropdown {
+            position: absolute !important;
+            z-index: 1060 !important;
+            /* Di atas standard elemen bootstrap */
+            background: #ffffff !important;
+            width: 100% !important;
+            left: 0 !important;
+            top: 100% !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid #ced4da !important;
+            border-radius: 0.25rem !important;
+        }
+
+        /* Mematikan efek crash layout pada list item */
+        .ts-dropdown .ts-dropdown-content {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Mengamankan area data tambahan di bawahnya */
+        #additional-fields {
+            clear: both;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dynamic-fields-box {
+            margin-top: 1.25rem;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+    </style>
+<?php $__env->stopPush(); ?>
 
 <?php $__env->startPush('scripts'); ?>
     <script>
