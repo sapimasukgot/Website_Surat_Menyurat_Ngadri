@@ -110,9 +110,13 @@
                                     <a href="{{ route('surat.edit', $s) }}" class="action-btn btn-edit" title="Edit">
                                         <i class="fas fa-pen"></i>
                                     </a>
+                                    <a href="{{ route('surat.print', $s) }}" target="_blank" class="action-btn btn-view"
+                                        title="Print">
+                                        <i class="fas fa-print"></i>
+                                    </a>
                                     <a href="{{ route('surat.download', $s) }}" class="action-btn btn-download"
-                                        title="Download">
-                                        <i class="fas fa-download"></i>
+                                        title="Unduh .docx">
+                                        <i class="fas fa-file-word"></i>
                                     </a>
                                     <form action="{{ route('surat.destroy', $s) }}" method="POST" class="d-inline"
                                         onsubmit="return confirm('Hapus surat {{ $s->nomor_surat }}?')">

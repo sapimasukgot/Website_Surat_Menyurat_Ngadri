@@ -76,6 +76,41 @@
         </div>
     </div>
 
+    <!-- Perangkat Desa (Penandatangan) -->
+    <div class="card-modern mb-4">
+        <div class="card-header"><span class="card-title"><i class="fas fa-user-tie mr-2"></i> Perangkat Desa
+                Penandatangan</span></div>
+        <div class="card-body">
+            <p class="text-muted mb-3">Nama berikut otomatis dipakai pada bagian tanda tangan surat. Saat membuat surat,
+                Anda dapat memilih siapa yang menandatangani (default Kepala Desa). Nama dapat diubah kapan saja.</p>
+            <form action="{{ route('settings.pejabat') }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label><i class="fas fa-user-shield mr-1"></i> Kepala Desa</label>
+                        <input type="text" name="kepala_desa"
+                            class="form-control @error('kepala_desa') is-invalid @enderror"
+                            value="{{ old('kepala_desa', $kepalaDesa) }}" required>
+                        @error('kepala_desa')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label><i class="fas fa-user-edit mr-1"></i> Sekretaris Desa</label>
+                        <input type="text" name="sekretaris_desa"
+                            class="form-control @error('sekretaris_desa') is-invalid @enderror"
+                            value="{{ old('sekretaris_desa', $sekretarisDesa) }}" required>
+                        @error('sekretaris_desa')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <button class="btn btn-primary"><i class="fas fa-save mr-1"></i> Simpan Nama Perangkat</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Activity Row -->
     <div class="card-modern">
         <div class="card-header"><span class="card-title"><i class="fas fa-history mr-2"></i> Aktivitas Terbaru</span></div>

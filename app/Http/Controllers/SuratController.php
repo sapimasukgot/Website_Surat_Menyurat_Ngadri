@@ -5,6 +5,7 @@ use App\Http\Requests\StoreSuratRequest;
 use App\Http\Requests\UpdateSuratRequest;
 use App\Models\JenisSurat;
 use App\Models\Penduduk;
+use App\Models\Setting;
 use App\Models\Surat;
 use App\Services\NomorSuratService;
 use App\Services\SuratGeneratorService;
@@ -51,6 +52,7 @@ class SuratController extends Controller
             'jenisList' => JenisSurat::where('is_active', true)->orderBy('nama_surat')
                 ->get(['id', 'nama_surat', 'kode_surat', 'fields']),
             'penduduks' => Penduduk::orderBy('nama_lengkap')->get(['id', 'nik', 'nama_lengkap']),
+            'penandatanganList' => $this->penandatanganOptions(),
         ]);
     }
 
@@ -59,6 +61,7 @@ class SuratController extends Controller
         $jenis = JenisSurat::findOrFail($request->integer('jenis_surat_id'));
         $penduduk = Penduduk::findOrFail($request->integer('penduduk_id'));
         $tanggal = Carbon::parse($request->input('tanggal_surat'));
+        $role = $request->input('penandatangan_role', 'kepala_desa');
 
         $surat = Surat::create([
             'nomor_surat' => $this->nomorService->generate($jenis, $tanggal),
@@ -66,7 +69,7 @@ class SuratController extends Controller
             'penduduk_id' => $penduduk->id,
             'user_id' => $request->user()->id,
             'tanggal_surat' => $tanggal,
-            'data_surat' => $this->buildSnapshot($penduduk, $request->input('data', [])),
+            'data_surat' => $this->buildSnapshot($penduduk, $request->input('data', []), $role),
             'keterangan' => $request->input('keterangan'),
         ]);
 
@@ -85,17 +88,28 @@ class SuratController extends Controller
     {
         $surat->load(['jenisSurat', 'penduduk']);
 
-        return view('surat.edit', compact('surat'));
+        return view('surat.edit', [
+            'surat' => $surat,
+            'penandatanganList' => $this->penandatanganOptions(),
+        ]);
     }
 
     public function update(UpdateSuratRequest $request, Surat $surat): RedirectResponse
     {
+        $role = $request->input('penandatangan_role', 'kepala_desa');
+        $signer = Setting::penandatangan($role);
+
+        $data = array_merge($request->input('data', []), [
+            'penandatangan' => $signer['nama'],
+            'jabatan_ttd' => $signer['jabatan'],
+            'penandatangan_role' => $role,
+        ]);
 
         $surat->update([
             'nomor_surat' => $request->input('nomor_surat'),
             'tanggal_surat' => Carbon::parse($request->input('tanggal_surat')),
             'keterangan' => $request->input('keterangan'),
-            'data_surat' => $request->input('data'),
+            'data_surat' => $data,
         ]);
 
         return redirect()->route('surat.show', $surat)->with('success', 'Isi surat berhasil disimpan.');
@@ -119,14 +133,21 @@ class SuratController extends Controller
             $surat->update(['file_path' => $this->generator->generate($surat)]);
         }
 
-        return Storage::disk('public')->download($surat->file_path, $this->filename($surat));
+        return Storage::disk('public')->download($surat->file_path, $this->filename($surat, 'docx'));
     }
 
-    public function print(Surat $surat): StreamedResponse
+    public function print(Surat $surat): mixed
     {
-        $surat->update(['file_path' => $this->generator->generate($surat)]);
+        try {
+            $surat->update(['file_path' => $this->generator->generate($surat)]);
+        } catch (RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
-        return Storage::disk('public')->download($surat->file_path, $this->filename($surat));
+        return view('surat.print', [
+            'surat' => $surat,
+            'docxUrl' => route('surat.download', $surat),
+        ]);
     }
 
     public function destroy(Surat $surat): RedirectResponse
@@ -140,8 +161,10 @@ class SuratController extends Controller
         return redirect()->route('surat.index')->with('success', 'Surat berhasil dihapus.');
     }
 
-    private function buildSnapshot(Penduduk $p, array $additional): array
+    private function buildSnapshot(Penduduk $p, array $additional, string $role = 'kepala_desa'): array
     {
+        $signer = Setting::penandatangan($role);
+
         $base = [
             'nama' => $p->nama_lengkap,
             'nik' => $p->nik,
@@ -160,11 +183,25 @@ class SuratController extends Controller
             'no_hp' => $p->no_hp,
         ];
 
-        return array_merge($base, array_filter($additional, fn ($v) => $v !== null));
+        $signature = [
+            'penandatangan' => $signer['nama'],
+            'jabatan_ttd' => $signer['jabatan'],
+            'penandatangan_role' => $role,
+        ];
+
+        return array_merge($base, array_filter($additional, fn ($v) => $v !== null), $signature);
     }
 
-    private function filename(Surat $surat): string
+    private function penandatanganOptions(): array
     {
-        return str_replace('/', '-', $surat->nomor_surat).'.docx';
+        return [
+            'kepala_desa' => Setting::get('kepala_desa', ''),
+            'sekretaris_desa' => Setting::get('sekretaris_desa', ''),
+        ];
+    }
+
+    private function filename(Surat $surat, string $ext = 'docx'): string
+    {
+        return str_replace('/', '-', $surat->nomor_surat).'.'.$ext;
     }
 }

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JenisSurat;
 use App\Models\Penduduk;
+use App\Models\Setting;
 use App\Models\Surat;
 use Carbon\CarbonImmutable;
 use Illuminate\View\View;
@@ -24,6 +25,8 @@ class DashboardController extends Controller
             'chartJenis' => $this->jenisTerbanyak(),
             'aktivitas' => Surat::with(['jenisSurat', 'penduduk', 'user'])
                 ->latest()->limit(8)->get(),
+            'kepalaDesa' => Setting::get('kepala_desa', ''),
+            'sekretarisDesa' => Setting::get('sekretaris_desa', ''),
         ]);
     }
 

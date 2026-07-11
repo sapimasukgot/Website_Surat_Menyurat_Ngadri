@@ -53,6 +53,21 @@
                                 otomatis diambil dari database.</small>
                         </div>
 
+                        <div class="form-section-title"><i class="fas fa-user-tie"></i> Penandatangan</div>
+                        <div class="form-group">
+                            <label>Ditandatangani oleh <span class="text-danger">*</span></label>
+                            <select name="penandatangan_role" class="form-control">
+                                <option value="kepala_desa" @selected(old('penandatangan_role', 'kepala_desa') === 'kepala_desa')>
+                                    Kepala Desa — {{ $penandatanganList['kepala_desa'] ?: 'belum diatur' }}
+                                </option>
+                                <option value="sekretaris_desa" @selected(old('penandatangan_role') === 'sekretaris_desa')>
+                                    Sekretaris Desa — {{ $penandatanganList['sekretaris_desa'] ?: 'belum diatur' }}
+                                </option>
+                            </select>
+                            <small class="text-muted" style="font-size:0.8rem;">Default Kepala Desa. Nama diambil dari
+                                pengaturan perangkat desa pada dashboard.</small>
+                        </div>
+
                         {{-- Dynamic Additional Fields --}}
                         <div id="additional-fields"></div>
 

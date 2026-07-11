@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Models\JenisSurat;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSuratRequest extends FormRequest
 {
@@ -17,6 +18,7 @@ class StoreSuratRequest extends FormRequest
             'jenis_surat_id' => ['required', 'exists:jenis_surats,id'],
             'penduduk_id' => ['required', 'exists:penduduks,id'],
             'tanggal_surat' => ['required', 'date'],
+            'penandatangan_role' => ['nullable', Rule::in(['kepala_desa', 'sekretaris_desa'])],
             'keterangan' => ['nullable', 'string', 'max:1000'],
         ];
 
