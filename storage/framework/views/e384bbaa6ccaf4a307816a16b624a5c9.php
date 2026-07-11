@@ -4,27 +4,32 @@
 
 <?php $__env->startSection('content'); ?>
     <div class="login-split-container">
-        <!-- Left Column: Branding Showcase -->
-        <div class="login-split-brand">
+        <div class="login-split-brand d-flex flex-column"
+            style="min-height: 100vh; position: relative; padding-top: 12%; padding-left: 40px; padding-right: 40px;">
             <div class="brand-showcase">
-                <img src="<?php echo e(asset('images/logo.png')); ?>" alt="Logo <?php echo e(config('desa.nama')); ?>" class="brand-showcase-logo">
-                <h1>Halo <?php echo e(config('desa.nama')); ?>!</h1>
+                <div class="logo-container d-flex align-items-center mb-4" style="gap: 15px;">
+                    <img src="<?php echo e(asset('images/blitar no bg.png')); ?>" alt="Logo Kab Blitar"
+                        style="height: 65px; width: auto; object-fit: contain;">
+
+                    <img src="<?php echo e(asset('images/LOGO DESA NGADRI NO BG.png')); ?>" alt="Logo <?php echo e(config('desa.nama')); ?>"
+                        style="height: 75px; width: auto; object-fit: contain;">
+
+                    <img src="<?php echo e(asset('images/Logo Polosan.png')); ?>" alt="Logo KKN"
+                        style="height: 75px; width: auto; object-fit: contain;">
+                </div>
+
+                <h1>Pelayanan Surat Menyurat Desa Ngadri</h1>
                 <p>Sistem Administrasi Surat Menyurat Terpadu. Mempermudah pelayanan surat penduduk secara efisien, cepat,
                     dan transparan.</p>
             </div>
-            <div class="brand-showcase-footer">
+
+            <div class="brand-showcase-footer" style="position: absolute; bottom: 20px; left: 40px;">
                 &copy; 2026 <?php echo e(config('desa.nama')); ?>. All rights reserved.
             </div>
         </div>
 
-        <!-- Right Column: Login Form -->
-        <div class="login-split-form">
+        <div class="login-split-form d-flex flex-column" style="padding-top: 12%;">
             <div class="login-form-inner">
-                <div class="login-form-logo-section">
-                    <img src="<?php echo e(asset('images/logo.png')); ?>" alt="Logo" class="login-form-logo">
-                    <span class="login-form-title">Surat Desa</span>
-                </div>
-
                 <h2 class="login-welcome-title">Selamat Datang!</h2>
                 <p class="login-welcome-subtitle">Masukkan kredensial Anda untuk masuk ke sistem.</p>
 

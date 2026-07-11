@@ -3,8 +3,8 @@
 @php($isSurat = request()->routeIs('surat.*'))
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="{{ route('dashboard') }}" class="brand-link d-flex align-items-center justify-content-center">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo {{ config('desa.nama') }}" class="mr-2"
-            style="max-height: 38px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+        <img src="{{ asset('images/LOGO DESA NGADRI NO BG.png') }}" alt="Logo {{ config('desa.nama') }}" class="mr-2"
+            style="max-height: 70px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
         <span class="brand-text font-weight-bold">Surat Desa</span>
     </a>
 
