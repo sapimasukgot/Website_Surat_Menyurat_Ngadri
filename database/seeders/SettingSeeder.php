@@ -10,8 +10,13 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         $defaults = [
+<<<<<<< Updated upstream
             'kepala_desa' => 'Sugeng Riyadi',
             'sekretaris_desa' => 'Administrator Desa',
+=======
+            'kepala_desa' => 'NURYASIN',
+            'sekretaris_desa' => 'Sekretaris Desa',
+>>>>>>> Stashed changes
         ];
 
         foreach ($defaults as $key => $value) {

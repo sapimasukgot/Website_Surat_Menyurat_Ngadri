@@ -16,7 +16,8 @@ class Penduduk extends Model
 
     protected $fillable = [
         'nik', 'no_kk', 'nama_lengkap', 'tempat_lahir', 'tanggal_lahir',
-        'jenis_kelamin', 'agama', 'pendidikan', 'pekerjaan', 'status_kawin',
+        'jenis_kelamin', 'golongan_darah', 'agama', 'pendidikan', 'pekerjaan',
+        'status_kawin', 'status_hubungan', 'nama_ayah', 'nama_ibu',
         'alamat', 'rt', 'rw', 'dusun', 'no_hp',
     ];
 
@@ -32,6 +33,13 @@ class Penduduk extends Model
     public const STATUS_KAWIN = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
 
     public const AGAMA = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
+
+    public const GOLONGAN_DARAH = ['A', 'B', 'AB', 'O', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Tidak Tahu'];
+
+    public const STATUS_HUBUNGAN = [
+        'Kepala Keluarga', 'Suami', 'Istri', 'Anak', 'Menantu', 'Cucu',
+        'Orang Tua', 'Mertua', 'Famili Lain', 'Pembantu', 'Lainnya',
+    ];
 
     public function surats(): HasMany
     {

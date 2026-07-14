@@ -19,7 +19,11 @@
                     </div>
                     <div class="alert alert-info small mb-0">
                         <strong>Aturan import:</strong> NIK baru akan <b>ditambahkan</b>, NIK yang sudah ada akan <b>diperbarui</b> (tanpa duplikat).
-                        Kolom yang diharapkan: <code>NIK, No KK, Nama Lengkap, Tempat Lahir, Tanggal Lahir, Jenis Kelamin, Agama, Pendidikan, Pekerjaan, Status Kawin, Alamat, RT, RW, Dusun, No HP</code>.
+                        Sistem <b>otomatis mengenali kolom</b> dan baris header (mendukung format <b>BIP Desa</b> apa adanya,
+                        walau ada baris judul di atas header). Kolom yang dikenali antara lain:
+                        <code>NIK, NO KK, NAMA LENGKAP, JK, TEMPAT LAHIR, TANGGAL LAHIR, AGAMA, STATUS, PENDIDIKAN, PEKERJAAN, ALAMAT, NO RT, NO RW</code>
+                        (juga menerima nama kolom umum: Nama Lengkap, Jenis Kelamin, Status Kawin, Dusun, No HP).
+                        Tanggal lahir, status kawin, jenis kelamin, dan agama dinormalkan otomatis; Dusun diambil dari kolom Alamat bila tidak ada kolom Dusun tersendiri.
                     </div>
                 </div>
                 <div class="card-footer">

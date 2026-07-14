@@ -19,8 +19,9 @@ class PendudukExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
     public function headings(): array
     {
         return [
-            'NIK', 'No KK', 'Nama Lengkap', 'Tempat Lahir', 'Tanggal Lahir',
-            'Jenis Kelamin', 'Agama', 'Pendidikan', 'Pekerjaan', 'Status Kawin',
+            'No KK', 'NIK', 'Nama Lengkap', 'JK', 'Tempat Lahir', 'Tanggal Lahir',
+            'Gol. Darah', 'Agama', 'Status Kawin', 'Status Hubungan',
+            'Pendidikan', 'Pekerjaan', 'Nama Ibu', 'Nama Ayah',
             'Alamat', 'RT', 'RW', 'Dusun', 'No HP',
         ];
     }
@@ -28,16 +29,20 @@ class PendudukExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
     public function map($p): array
     {
         return [
-            "\t".$p->nik,
             "\t".$p->no_kk,
+            "\t".$p->nik,
             $p->nama_lengkap,
+            $p->jenis_kelamin,
             $p->tempat_lahir,
             $p->tanggal_lahir?->format('d-m-Y'),
-            $p->jenis_kelamin,
+            $p->golongan_darah,
             $p->agama,
+            $p->status_kawin,
+            $p->status_hubungan,
             $p->pendidikan,
             $p->pekerjaan,
-            $p->status_kawin,
+            $p->nama_ibu,
+            $p->nama_ayah,
             $p->alamat,
             $p->rt,
             $p->rw,

@@ -26,12 +26,12 @@
 {{-- Data Lahir & Jenis Kelamin --}}
 <div class="form-section-title mt-2"><i class="fas fa-birthday-cake"></i> Data Kelahiran</div>
 <div class="form-row">
-    <div class="form-group col-md-5">
+    <div class="form-group col-md-4">
         <label>Tempat Lahir</label>
         <input type="text" name="tempat_lahir" class="form-control"
             value="{{ old('tempat_lahir', $penduduk->tempat_lahir) }}" placeholder="Kota/Kabupaten">
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-3">
         <label>Tanggal Lahir</label>
         <input type="date" name="tanggal_lahir" class="form-control"
             value="{{ old('tanggal_lahir', $penduduk->tanggal_lahir?->format('Y-m-d')) }}">
@@ -41,6 +41,15 @@
         <select name="jenis_kelamin" class="form-control" required>
             @foreach (\App\Models\Penduduk::JENIS_KELAMIN as $k => $v)
                 <option value="{{ $k }}" @selected(old('jenis_kelamin', $penduduk->jenis_kelamin) === $k)>{{ $v }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group col-md-2">
+        <label>Gol. Darah</label>
+        <select name="golongan_darah" class="form-control">
+            <option value="">—</option>
+            @foreach (\App\Models\Penduduk::GOLONGAN_DARAH as $g)
+                <option value="{{ $g }}" @selected(old('golongan_darah', $penduduk->golongan_darah) === $g)>{{ $g }}</option>
             @endforeach
         </select>
     </div>
@@ -59,22 +68,43 @@
         </select>
     </div>
     <div class="form-group col-md-3">
-        <label>Pendidikan</label>
-        <input type="text" name="pendidikan" class="form-control" value="{{ old('pendidikan', $penduduk->pendidikan) }}"
-            placeholder="Ex: S1">
-    </div>
-    <div class="form-group col-md-3">
-        <label>Pekerjaan</label>
-        <input type="text" name="pekerjaan" class="form-control" value="{{ old('pekerjaan', $penduduk->pekerjaan) }}"
-            placeholder="Ex: Petani">
-    </div>
-    <div class="form-group col-md-3">
         <label>Status Kawin <span class="text-danger">*</span></label>
         <select name="status_kawin" class="form-control" required>
             @foreach (\App\Models\Penduduk::STATUS_KAWIN as $s)
                 <option value="{{ $s }}" @selected(old('status_kawin', $penduduk->status_kawin) === $s)>{{ $s }}</option>
             @endforeach
         </select>
+    </div>
+    <div class="form-group col-md-3">
+        <label>Status Hubungan Keluarga</label>
+        <select name="status_hubungan" class="form-control">
+            <option value="">— Pilih —</option>
+            @foreach (\App\Models\Penduduk::STATUS_HUBUNGAN as $sh)
+                <option value="{{ $sh }}" @selected(old('status_hubungan', $penduduk->status_hubungan) === $sh)>{{ $sh }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group col-md-3">
+        <label>Pendidikan</label>
+        <input type="text" name="pendidikan" class="form-control" value="{{ old('pendidikan', $penduduk->pendidikan) }}"
+            placeholder="Ex: SLTA/Sederajat">
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-4">
+        <label>Pekerjaan</label>
+        <input type="text" name="pekerjaan" class="form-control" value="{{ old('pekerjaan', $penduduk->pekerjaan) }}"
+            placeholder="Ex: Petani">
+    </div>
+    <div class="form-group col-md-4">
+        <label>Nama Ayah</label>
+        <input type="text" name="nama_ayah" class="form-control" value="{{ old('nama_ayah', $penduduk->nama_ayah) }}"
+            placeholder="Nama ayah kandung">
+    </div>
+    <div class="form-group col-md-4">
+        <label>Nama Ibu</label>
+        <input type="text" name="nama_ibu" class="form-control" value="{{ old('nama_ibu', $penduduk->nama_ibu) }}"
+            placeholder="Nama ibu kandung">
     </div>
 </div>
 

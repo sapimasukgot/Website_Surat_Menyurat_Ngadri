@@ -34,6 +34,12 @@
             background: #fff; margin: 0 auto 16px; box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
         }
 
+<<<<<<< Updated upstream
+=======
+        /* Spasi/line-height dikoreksi lewat JS (samakanSpasiWord) agar identik
+           dengan tampilan Word — jangan timpa dengan CSS !important di sini. */
+
+>>>>>>> Stashed changes
         @media print {
             body { background: #fff; }
             #toolbar, #status { display: none !important; }
@@ -61,6 +67,61 @@
         const statusEl = document.getElementById('status');
         const btnPrint = document.getElementById('btn-print');
 
+<<<<<<< Updated upstream
+=======
+        /**
+         * Samakan lebar kolom tabel dengan Microsoft Word.
+         *
+         * Tabel dengan w:tblW="auto" (autofit) di Word memakai lebar sel (w:tcW),
+         * bukan w:tblGrid. docx-preview justru menulis <colgroup> dari tblGrid —
+         * bila grid template tidak sinkron dengan tcW (mis. tiga kolom sama lebar),
+         * kolom ":" jadi sangat lebar dan nilainya terdorong jauh ke kanan.
+         * Hapus <colgroup> pada tabel non-fixed agar lebar sel (sudah ditulis
+         * docx-preview di tiap <td>) yang menentukan, persis perilaku Word.
+         */
+        function samakanLebarKolomWord() {
+            viewer.querySelectorAll('.docx-wrapper table').forEach(function (tbl) {
+                if (tbl.style.tableLayout === 'fixed') return;
+                tbl.querySelectorAll(':scope > colgroup').forEach(function (cg) { cg.remove(); });
+            });
+        }
+
+        /**
+         * Samakan spasi hasil docx-preview dengan Microsoft Word.
+         *
+         * Word merender "single spacing" (w:line=240, lineRule=auto) setinggi
+         * metrik alami font — untuk Arial ±1,15 em — sedangkan docx-preview
+         * menghasilkan line-height 1.0 (nilai w:line / 240). Paragraf kosong
+         * di Word juga tetap setinggi satu baris penuh (1,15 em), sementara
+         * docx-preview hanya memberi min-height 1 em.
+         *
+         * Koreksi: kalikan semua line-height & min-height tanpa satuan/pt-class
+         * dengan faktor 1,15. Line-height dengan satuan pt/px pada inline style
+         * (lineRule "exact"/"atLeast") dibiarkan karena sudah akurat.
+         */
+        function samakanSpasiWord() {
+            const FAKTOR = 1.15;
+            viewer.querySelectorAll('.docx-wrapper p').forEach(function (p) {
+                const inline = p.style.lineHeight || '';
+                if (/pt|px|%|em/.test(inline)) return; // lineRule exact/atLeast → sudah sesuai Word
+
+                const cs = window.getComputedStyle(p);
+                const fontSize = parseFloat(cs.fontSize);
+                const lineHeight = parseFloat(cs.lineHeight); // NaN bila "normal"
+
+                if (fontSize && !isNaN(lineHeight)) {
+                    const rasio = lineHeight / fontSize;
+                    p.style.lineHeight = (Math.round(rasio * FAKTOR * 1000) / 1000).toString();
+                }
+
+                const minHeight = parseFloat(cs.minHeight);
+                if (!isNaN(minHeight) && minHeight > 0) {
+                    p.style.minHeight = (Math.round(minHeight * FAKTOR * 100) / 100) + 'px';
+                }
+            });
+        }
+
+>>>>>>> Stashed changes
         fetch(docxUrl, { credentials: 'same-origin' })
             .then(function (res) {
                 if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -75,6 +136,11 @@
                 });
             })
             .then(function () {
+<<<<<<< Updated upstream
+=======
+                samakanLebarKolomWord();
+                samakanSpasiWord();
+>>>>>>> Stashed changes
                 statusEl.style.display = 'none';
                 btnPrint.disabled = false;
                 setTimeout(function () { window.print(); }, 500);

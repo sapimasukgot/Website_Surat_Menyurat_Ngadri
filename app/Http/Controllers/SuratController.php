@@ -172,10 +172,14 @@ class SuratController extends Controller
             'tempat_lahir' => $p->tempat_lahir,
             'tanggal_lahir' => $p->tanggal_lahir?->format('d-m-Y'),
             'jenis_kelamin' => $p->jenis_kelamin_label,
+            'golongan_darah' => $p->golongan_darah,
             'agama' => $p->agama,
             'pendidikan' => $p->pendidikan,
             'pekerjaan' => $p->pekerjaan,
             'status_kawin' => $p->status_kawin,
+            'status_hubungan' => $p->status_hubungan,
+            'nama_ayah' => $p->nama_ayah,
+            'nama_ibu' => $p->nama_ibu,
             'alamat' => $p->alamat,
             'rt' => $p->rt,
             'rw' => $p->rw,
@@ -189,7 +193,11 @@ class SuratController extends Controller
             'penandatangan_role' => $role,
         ];
 
+<<<<<<< Updated upstream
         return array_merge($base, array_filter($additional, fn ($v) => $v !== null), $signature);
+=======
+        return array_merge($base, array_filter($additional, fn ($v) => $v !== null && $v !== ''), $signature);
+>>>>>>> Stashed changes
     }
 
     private function penandatanganOptions(): array
