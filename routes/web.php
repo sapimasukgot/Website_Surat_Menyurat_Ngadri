@@ -2,6 +2,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JenisSuratController;
 use App\Http\Controllers\PendudukController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SuratController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +10,7 @@ Route::get('/', fn() => redirect()->route('dashboard'));
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::put('pengaturan/pejabat', [SettingController::class, 'updatePejabat'])->name('settings.pejabat');
 
     Route::get('penduduk/export', [PendudukController::class, 'export'])->name('penduduk.export');
     Route::get('penduduk/import', [PendudukController::class, 'importForm'])->name('penduduk.import.form');

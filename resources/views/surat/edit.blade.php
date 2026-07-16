@@ -2,6 +2,8 @@
 @section('title', 'Sunting Surat')
 
 @php($longFields = ['alamat', 'keterangan_tambahan', 'alamat_usaha'])
+@php($reserved = ['penandatangan', 'jabatan_ttd', 'penandatangan_role'])
+@php($currentRole = $surat->data_surat['penandatangan_role'] ?? 'kepala_desa')
 
 @section('content')
     <div class="row">
@@ -37,6 +39,7 @@
                                 <h6><i class="fas fa-database mr-1"></i>Isi Surat (dapat disunting)</h6>
                                 <div class="form-row">
                                     @foreach ($surat->data_surat as $key => $value)
+                                        @continue(in_array($key, $reserved))
                                         <div class="form-group {{ in_array($key, $longFields) ? 'col-12' : 'col-md-6' }}">
                                             <label style="font-size:0.84rem;font-weight:700;color:#4A5568;">
                                                 {{ \Illuminate\Support\Str::title(str_replace('_', ' ', $key)) }}
@@ -53,6 +56,21 @@
                                 </div>
                             </div>
                         @endif
+
+                        <div class="form-section-title"><i class="fas fa-user-tie"></i> Penandatangan</div>
+                        <div class="form-group">
+                            <label>Ditandatangani oleh <span class="text-danger">*</span></label>
+                            <select name="penandatangan_role" class="form-control">
+                                <option value="kepala_desa" @selected(old('penandatangan_role', $currentRole) === 'kepala_desa')>
+                                    Kepala Desa — {{ $penandatanganList['kepala_desa'] ?: 'belum diatur' }}
+                                </option>
+                                <option value="sekretaris_desa" @selected(old('penandatangan_role', $currentRole) === 'sekretaris_desa')>
+                                    Sekretaris Desa — {{ $penandatanganList['sekretaris_desa'] ?: 'belum diatur' }}
+                                </option>
+                            </select>
+                            <small class="text-muted" style="font-size:0.8rem;">Nama penandatangan mengikuti pengaturan
+                                perangkat desa terbaru saat disimpan.</small>
+                        </div>
 
                         <div class="form-section-title"><i class="fas fa-sticky-note"></i> Keterangan</div>
                         <div class="form-group">
