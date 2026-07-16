@@ -60,7 +60,13 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn split-login-btn">Masuk Sistem</button>
+                    <button type="submit" class="btn split-login-btn mb-3">Masuk Sistem</button>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted text-sm">Belum punya akun perangkat?</span>
+                        <a href="<?php echo e(route('register')); ?>" class="text-sm font-weight-bold"
+                            style="color: var(--brand-primary);">Daftar Baru</a>
+                    </div>
                 </form>
             </div>
         </div>

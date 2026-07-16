@@ -54,8 +54,23 @@ body {
 
 .brand-link {
     border-bottom: none !important;
-    padding: 1.5rem 1rem !important;
     background-color: var(--brand-primary-dark) !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+body:not(.sidebar-collapse) .brand-link,
+.sidebar-collapse .main-sidebar:hover .brand-link {
+    padding: 1.5rem 1rem !important;
+}
+
+body:not(.sidebar-collapse) .brand-link img,
+.sidebar-collapse .main-sidebar:hover .brand-link img {
+    max-height: 45px !important;
+    width: auto;
+    transition: all 0.3s ease;
 }
 
 .brand-link i {
@@ -68,12 +83,40 @@ body {
     font-weight: 800 !important;
     color: #ffffff !important;
     letter-spacing: 0.5px;
+    transition: opacity 0.3s ease;
+}
+
+/* Custom collapsed state for brand link */
+body.sidebar-collapse .main-sidebar:not(:hover) .brand-link {
+    padding: 0.8rem 0.5rem !important;
+    justify-content: center;
+}
+
+body.sidebar-collapse .main-sidebar:not(:hover) .brand-link img {
+    max-height: 33px !important;
+    margin-right: 0 !important;
+}
+
+body.sidebar-collapse .main-sidebar:not(:hover) .brand-link .brand-text {
+    display: none !important;
 }
 
 .user-panel {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    margin: 0.5rem 0.8rem 1.2rem 0.8rem !important;
     padding-bottom: 1.2rem !important;
+    transition: all 0.3s ease;
+}
+
+body:not(.sidebar-collapse) .user-panel,
+.sidebar-collapse .main-sidebar:hover .user-panel {
+    margin: 0.5rem 0.8rem 1.2rem 0.8rem !important;
+}
+
+/* Custom collapsed state for user panel */
+body.sidebar-collapse .main-sidebar:not(:hover) .user-panel {
+    margin: 0.5rem 0 !important;
+    padding-bottom: 0.5rem !important;
+    justify-content: center;
 }
 
 .user-panel .image i {
@@ -98,18 +141,26 @@ body {
 
 .nav-sidebar .nav-link {
     border-radius: var(--border-radius-md) !important;
-    margin: 0 0.8rem !important;
-    padding: 0.75rem 1rem !important;
     color: rgba(255, 255, 255, 0.7) !important;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
+body:not(.sidebar-collapse) .nav-sidebar .nav-link,
+.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-link {
+    margin: 0 0.8rem !important;
+    padding: 0.75rem 1rem !important;
+}
+
 .nav-sidebar .nav-link i {
     font-size: 1.05rem;
+    transition: color 0.3s ease;
+}
+
+body:not(.sidebar-collapse) .nav-sidebar .nav-link i,
+.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-link i {
     margin-right: 0.75rem;
     color: rgba(255, 255, 255, 0.6) !important;
-    transition: color 0.3s ease;
 }
 
 .nav-sidebar .nav-link:hover {
