@@ -111,6 +111,63 @@
         </div>
     </div>
 
+<<<<<<< Updated upstream
+=======
+    <!-- Logo Kop Surat -->
+    <div class="card-modern mb-4">
+        <div class="card-header"><span class="card-title"><i class="fas fa-image mr-2"></i> Logo Kop Surat</span></div>
+        <div class="card-body">
+            <p class="text-muted mb-3">Unggah logo untuk kop surat. Setelah disimpan, logo otomatis diterapkan ke
+                <strong>seluruh template surat</strong> (kiri: logo kabupaten, kanan: logo desa). Surat yang dibuat
+                setelahnya akan memakai logo baru.</p>
+            <form action="{{ route('settings.logo') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label><i class="fas fa-landmark mr-1"></i> Logo Kabupaten (kiri)</label>
+                        <div class="d-flex align-items-center">
+                            <img id="preview-logo_kabupaten"
+                                src="{{ $logoKabupaten ? asset('storage/'.$logoKabupaten).'?v='.time() : '' }}"
+                                alt="Logo Kabupaten"
+                                style="height:52px;width:52px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;padding:3px;margin-right:10px;background:#fff;{{ $logoKabupaten ? '' : 'display:none;' }}">
+                            <div class="flex-grow-1">
+                                <input type="file" name="logo_kabupaten" accept=".png,.jpg,.jpeg" data-preview="preview-logo_kabupaten"
+                                    class="form-control-file logo-input @error('logo_kabupaten') is-invalid @enderror">
+                                @error('logo_kabupaten')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <small class="text-muted">PNG/JPG, maks. 2 MB.
+                            {{ $logoKabupaten ? '' : 'Belum diubah — masih memakai logo bawaan template.' }}</small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label><i class="fas fa-home mr-1"></i> Logo Desa (kanan)</label>
+                        <div class="d-flex align-items-center">
+                            <img id="preview-logo_desa"
+                                src="{{ $logoDesa ? asset('storage/'.$logoDesa).'?v='.time() : '' }}"
+                                alt="Logo Desa"
+                                style="height:52px;width:52px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;padding:3px;margin-right:10px;background:#fff;{{ $logoDesa ? '' : 'display:none;' }}">
+                            <div class="flex-grow-1">
+                                <input type="file" name="logo_desa" accept=".png,.jpg,.jpeg" data-preview="preview-logo_desa"
+                                    class="form-control-file logo-input @error('logo_desa') is-invalid @enderror">
+                                @error('logo_desa')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <small class="text-muted">PNG/JPG, maks. 2 MB.
+                            {{ $logoDesa ? '' : 'Belum diatur — sel kanan kop akan diisi saat logo diunggah.' }}</small>
+                    </div>
+                </div>
+                <button class="btn btn-primary"><i class="fas fa-upload mr-1"></i> Simpan &amp; Terapkan ke Semua
+                    Template</button>
+            </form>
+        </div>
+    </div>
+
+>>>>>>> Stashed changes
     <!-- Activity Row -->
     <div class="card-modern">
         <div class="card-header"><span class="card-title"><i class="fas fa-history mr-2"></i> Aktivitas Terbaru</span></div>
@@ -204,6 +261,21 @@
                 },
                 cutout: '65%'
             }
+        });
+
+        // Pratinjau logo sebelum diunggah
+        document.querySelectorAll('.logo-input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                const file = this.files && this.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                const img = document.getElementById(this.dataset.preview);
+                const reader = new FileReader();
+                reader.onload = e => {
+                    img.src = e.target.result;
+                    img.style.display = 'inline-block';
+                };
+                reader.readAsDataURL(file);
+            });
         });
     </script>
 @endpush

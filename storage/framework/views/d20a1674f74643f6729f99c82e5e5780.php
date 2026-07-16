@@ -35,6 +35,12 @@
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+        /* Spasi/line-height dikoreksi lewat JS (samakanSpasiWord) agar identik
+           dengan tampilan Word — jangan timpa dengan CSS !important di sini. */
+
+>>>>>>> Stashed changes
 =======
         /* Spasi/line-height dikoreksi lewat JS (samakanSpasiWord) agar identik
            dengan tampilan Word — jangan timpa dengan CSS !important di sini. */
@@ -68,7 +74,10 @@
         const btnPrint = document.getElementById('btn-print');
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         /**
          * Samakan lebar kolom tabel dengan Microsoft Word.
          *
@@ -121,6 +130,9 @@
             });
         }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         fetch(docxUrl, { credentials: 'same-origin' })
             .then(function (res) {
@@ -137,6 +149,11 @@
             })
             .then(function () {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+                samakanLebarKolomWord();
+                samakanSpasiWord();
+>>>>>>> Stashed changes
 =======
                 samakanLebarKolomWord();
                 samakanSpasiWord();

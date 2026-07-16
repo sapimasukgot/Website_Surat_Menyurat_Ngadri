@@ -102,6 +102,7 @@ unset($__errorArgs, $__bag); ?>
 
                         
                         <div id="additional-fields"></div>
+<<<<<<< Updated upstream
 
                         <div class="form-section-title"><i class="fas fa-sticky-note"></i> Keterangan</div>
                         <div class="form-group">
@@ -109,6 +110,8 @@ unset($__errorArgs, $__bag); ?>
                             <textarea name="keterangan" rows="2" class="form-control"
                                 placeholder="Catatan internal (tidak tampil di surat)..."><?php echo e(old('keterangan')); ?></textarea>
                         </div>
+=======
+>>>>>>> Stashed changes
                     </div>
                     <div class="feature-card-footer">
                         <button type="submit" class="btn btn-primary">
@@ -182,6 +185,44 @@ unset($__errorArgs, $__bag); ?>
         const oldData = <?php echo json_encode(old('data', []), 512) ?>;
         const container = document.getElementById('additional-fields');
         const select = document.getElementById('jenis_select');
+<<<<<<< Updated upstream
+=======
+        const pendudukSelect = document.querySelector('select[name="penduduk_id"]');
+        const keluargaUrlTpl = <?php echo json_encode(route('penduduk.keluarga', ':id'), 512) ?>;
+        let anakCache = { pendudukId: null, list: [] };
+
+        function anakOptionsHtml(selected) {
+            if (!anakCache.pendudukId) {
+                return '<option value="">— Pilih pemohon terlebih dahulu —</option>';
+            }
+            if (!anakCache.list.length) {
+                return '<option value="">— Tidak ada data anak dalam KK pemohon —</option>';
+            }
+            return '<option value="">— Pilih Anak —</option>' + anakCache.list.map(a =>
+                `<option value="${a.id}" ${String(selected) === String(a.id) ? 'selected' : ''}>${a.nik} — ${a.nama}</option>`
+            ).join('');
+        }
+
+        function refreshAnakSelects() {
+            container.querySelectorAll('select.anak-kk-select').forEach(sel => {
+                const selected = sel.value || sel.dataset.old || '';
+                sel.innerHTML = anakOptionsHtml(selected);
+            });
+        }
+
+        async function loadAnak(pendudukId) {
+            anakCache = { pendudukId: pendudukId || null, list: [] };
+            if (pendudukId) {
+                try {
+                    const res = await fetch(keluargaUrlTpl.replace(':id', pendudukId), {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (res.ok) anakCache.list = (await res.json()).anak || [];
+                } catch (e) { /* biarkan kosong */ }
+            }
+            refreshAnakSelects();
+        }
+>>>>>>> Stashed changes
 
         function renderFields(id) {
             container.innerHTML = '';
@@ -196,18 +237,39 @@ unset($__errorArgs, $__bag); ?>
                 const val = oldData[f.name] || '';
                 const req = f.required ? '<span class="text-danger">*</span>' : '';
                 const isLong = f.type === 'textarea';
+<<<<<<< Updated upstream
                 const input = isLong
                     ? `<textarea name="data[${f.name}]" rows="2" class="form-control" ${f.required ? 'required' : ''}>${val}</textarea>`
                     : `<input type="${f.type === 'number' ? 'number' : (f.type === 'date' ? 'date' : 'text')}" name="data[${f.name}]" class="form-control" value="${val}" ${f.required ? 'required' : ''}>`;
+=======
+                let input;
+                if (f.type === 'anak_kk') {
+                    input = `<select name="data[${f.name}]" class="form-control anak-kk-select" data-old="${val}" ${f.required ? 'required' : ''}></select>
+                        <small class="text-muted" style="font-size:0.78rem;">Daftar NIK anak diambil otomatis dari KK pemohon. Data anak (nama, NIK, TTL) otomatis masuk ke surat.</small>`;
+                } else if (isLong) {
+                    input = `<textarea name="data[${f.name}]" rows="2" class="form-control" ${f.required ? 'required' : ''}>${val}</textarea>`;
+                } else {
+                    input = `<input type="${f.type === 'number' ? 'number' : (f.type === 'date' ? 'date' : 'text')}" name="data[${f.name}]" class="form-control" value="${val}" ${f.required ? 'required' : ''}>`;
+                }
+>>>>>>> Stashed changes
                 const colClass = isLong ? 'col-12' : 'col-md-6';
                 row.insertAdjacentHTML('beforeend',
                     `<div class="form-group ${colClass}"><label style="font-size:0.84rem;font-weight:700;color:#4A5568;">${f.label} ${req}</label>${input}</div>`);
             });
             wrap.appendChild(row);
             container.appendChild(wrap);
+<<<<<<< Updated upstream
         }
 
         select.addEventListener('change', e => renderFields(e.target.value));
+=======
+            refreshAnakSelects();
+        }
+
+        select.addEventListener('change', e => renderFields(e.target.value));
+        pendudukSelect.addEventListener('change', e => loadAnak(e.target.value));
+        if (pendudukSelect.value) loadAnak(pendudukSelect.value);
+>>>>>>> Stashed changes
         if (select.value) renderFields(select.value);
     </script>
 <?php $__env->stopPush(); ?>

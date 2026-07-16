@@ -58,6 +58,7 @@
                         @endif
 
                         <div class="form-section-title"><i class="fas fa-user-tie"></i> Penandatangan</div>
+<<<<<<< Updated upstream
                         <div class="form-group">
                             <label>Ditandatangani oleh <span class="text-danger">*</span></label>
                             <select name="penandatangan_role" class="form-control">
@@ -73,11 +74,22 @@
                         </div>
 
                         <div class="form-section-title"><i class="fas fa-sticky-note"></i> Keterangan</div>
+=======
+>>>>>>> Stashed changes
                         <div class="form-group">
-                            <label>Keterangan Internal</label>
-                            <textarea name="keterangan" rows="2" class="form-control"
-                                placeholder="Catatan internal...">{{ old('keterangan', $surat->keterangan) }}</textarea>
+                            <label>Ditandatangani oleh <span class="text-danger">*</span></label>
+                            <select name="penandatangan_role" class="form-control">
+                                <option value="kepala_desa" @selected(old('penandatangan_role', $currentRole) === 'kepala_desa')>
+                                    Kepala Desa — {{ $penandatanganList['kepala_desa'] ?: 'belum diatur' }}
+                                </option>
+                                <option value="sekretaris_desa" @selected(old('penandatangan_role', $currentRole) === 'sekretaris_desa')>
+                                    Sekretaris Desa — {{ $penandatanganList['sekretaris_desa'] ?: 'belum diatur' }}
+                                </option>
+                            </select>
+                            <small class="text-muted" style="font-size:0.8rem;">Nama penandatangan mengikuti pengaturan
+                                perangkat desa terbaru saat disimpan.</small>
                         </div>
+
                     </div>
                     <div class="feature-card-footer">
                         <button type="submit" class="btn btn-primary">

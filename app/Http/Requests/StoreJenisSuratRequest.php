@@ -25,7 +25,7 @@ class StoreJenisSuratRequest extends FormRequest
             ],
             'fields' => ['nullable', 'array'],
             'fields.*.label' => ['nullable', 'string', 'max:100'],
-            'fields.*.type' => ['nullable', Rule::in(['text', 'textarea', 'date', 'number'])],
+            'fields.*.type' => ['nullable', Rule::in(['text', 'textarea', 'date', 'number', 'anak_kk'])],
             'fields.*.required' => ['nullable'],
         ];
     }

@@ -77,11 +77,15 @@ class JenisSuratSeeder extends Seeder
                 'is_active' => true,
                 'fields' => [
                     $this->t('keperluan', 'Keperluan (mis. Pengajuan BKSM/KIP)', 'text', true),
+<<<<<<< Updated upstream
                     $this->t('nama_anak', 'Nama Anak', 'text', true),
                     $this->t('tempat_lahir_anak', 'Tempat Lahir Anak'),
                     $this->t('tanggal_lahir_anak', 'Tanggal Lahir Anak', 'date'),
                     $this->t('jenis_kelamin_anak', 'Jenis Kelamin Anak'),
                     $this->t('nik_anak', 'NIK Anak'),
+=======
+                    $this->t('anak', 'Anak (dipilih dari satu KK pemohon)', 'anak_kk', true),
+>>>>>>> Stashed changes
                     $this->t('sekolah', 'Sekolah / Pendidikan'),
                 ],
             ],

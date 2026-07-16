@@ -10,8 +10,19 @@
 
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
+<<<<<<< Updated upstream
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-user"></i> <?php echo e(Auth::user()->name); ?> <i class="fas fa-caret-down"></i>
+=======
+            <a class="nav-link d-flex align-items-center" data-toggle="dropdown" href="#">
+                <?php if(Auth::user()->photo_url): ?>
+                    <img src="<?php echo e(Auth::user()->photo_url); ?>?v=<?php echo e(Auth::user()->updated_at?->timestamp); ?>" alt="Foto"
+                        style="width:26px;height:26px;object-fit:cover;border-radius:50%;margin-right:6px;border:2px solid rgba(255,255,255,0.6);">
+                <?php else: ?>
+                    <i class="far fa-user" style="margin-right:6px;"></i>
+                <?php endif; ?>
+                <?php echo e(Auth::user()->name); ?> <i class="fas fa-caret-down ml-1"></i>
+>>>>>>> Stashed changes
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <span class="dropdown-item-text text-muted small"><?php echo e(Auth::user()->jabatan ?? 'Admin'); ?></span>

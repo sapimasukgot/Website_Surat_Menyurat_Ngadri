@@ -27,6 +27,11 @@ class DashboardController extends Controller
                 ->latest()->limit(8)->get(),
             'kepalaDesa' => Setting::get('kepala_desa', ''),
             'sekretarisDesa' => Setting::get('sekretaris_desa', ''),
+<<<<<<< Updated upstream
+=======
+            'logoKabupaten' => Setting::get('logo_kabupaten'),
+            'logoDesa' => Setting::get('logo_desa'),
+>>>>>>> Stashed changes
         ]);
     }
 

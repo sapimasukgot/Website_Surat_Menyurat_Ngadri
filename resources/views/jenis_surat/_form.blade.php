@@ -45,6 +45,10 @@
 <div class="form-section-title mt-2"><i class="fas fa-list-ul"></i> Field Tambahan (Dinamis)</div>
 <p class="text-muted" style="font-size:0.84rem;">Field ini akan tampil saat pembuatan surat. Placeholder otomatis dari
     label (mis. "Nama Usaha" &rarr; <code>${nama_usaha}</code>).</p>
+<p class="text-muted" style="font-size:0.84rem;">Tipe <strong>Anak (satu KK)</strong> menampilkan dropdown NIK anak yang
+    satu KK dengan pemohon. Jika label field-nya "Anak", placeholder yang tersedia: <code>${anak}</code>,
+    <code>${nama_anak}</code>, <code>${nik_anak}</code>, <code>${tempat_lahir_anak}</code>,
+    <code>${tanggal_lahir_anak}</code>, <code>${jenis_kelamin_anak}</code>.</p>
 
 <table class="table table-sm" id="fields-table">
     <thead>
@@ -63,7 +67,7 @@
                         value="{{ $f['label'] ?? '' }}"></td>
                 <td>
                     <select name="fields[{{ $i }}][type]" class="form-control form-control-sm">
-                        @foreach (['text' => 'Teks', 'textarea' => 'Teks Panjang', 'date' => 'Tanggal', 'number' => 'Angka'] as $val => $lbl)
+                        @foreach (['text' => 'Teks', 'textarea' => 'Teks Panjang', 'date' => 'Tanggal', 'number' => 'Angka', 'anak_kk' => 'Anak (satu KK)'] as $val => $lbl)
                             <option value="{{ $val }}" @selected(($f['type'] ?? 'text') === $val)>{{ $lbl }}</option>
                         @endforeach
                     </select>
@@ -99,7 +103,8 @@
                 <td><input type="text" name="fields[${idx}][label]" class="form-control form-control-sm"></td>
                 <td><select name="fields[${idx}][type]" class="form-control form-control-sm">
                     <option value="text">Teks</option><option value="textarea">Teks Panjang</option>
-                    <option value="date">Tanggal</option><option value="number">Angka</option></select></td>
+                    <option value="date">Tanggal</option><option value="number">Angka</option>
+                    <option value="anak_kk">Anak (satu KK)</option></select></td>
                 <td><input type="checkbox" name="fields[${idx}][required]" value="1"></td>
                 <td><button type="button" class="btn btn-xs btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>`;
             document.querySelector('#fields-table tbody').appendChild(tr);

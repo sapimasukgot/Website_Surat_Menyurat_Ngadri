@@ -2,15 +2,23 @@
 @php($isJenis = request()->routeIs('jenis-surat.*'))
 @php($isSurat = request()->routeIs('surat.*'))
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="{{ route('dashboard') }}" class="brand-link d-flex align-items-center justify-content-center">
-        <img src="{{ asset('images/LOGO DESA NGADRI NO BG.png') }}" alt="Logo {{ config('desa.nama') }}" class="mr-2"
-            style="max-height: 70px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+    <a href="{{ route('dashboard') }}" class="brand-link">
+        <img src="{{ asset('images/LOGO DESA NGADRI NO BG.png') }}" alt="Logo {{ config('desa.nama') }}"
+            class="brand-image" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
         <span class="brand-text font-weight-bold">Surat Desa</span>
     </a>
 
     <div class="sidebar">
         <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
-            <div class="image"><i class="fas fa-user-circle fa-2x text-white-50"></i></div>
+            <div class="image">
+                @if (Auth::user()->photo_url)
+                    <img src="{{ Auth::user()->photo_url }}?v={{ Auth::user()->updated_at?->timestamp }}"
+                        class="img-circle elevation-1" alt="Foto"
+                        style="width:34px;height:34px;object-fit:cover;">
+                @else
+                    <i class="fas fa-user-circle fa-2x text-white-50"></i>
+                @endif
+            </div>
             <div class="info">
                 <span class="d-block text-white">{{ Auth::user()->name }}</span>
                 <small class="text-white-50">{{ Auth::user()->jabatan ?? 'Administrator' }}</small>

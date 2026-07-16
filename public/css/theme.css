@@ -53,9 +53,21 @@ body {
 }
 
 .brand-link {
-    border-bottom: none !important;
-    padding: 1.5rem 1rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 0.9rem 0.8rem !important;
     background-color: var(--brand-primary-dark) !important;
+    display: flex !important;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.brand-link .brand-image {
+    max-height: 40px !important;
+    width: auto;
+    margin-left: 0.35rem;
+    margin-right: 0.65rem;
+    float: none !important;
 }
 
 .brand-link i {
@@ -134,11 +146,51 @@ body {
 }
 
 .nav-sidebar .nav-header {
-    color: var(--brand-secondary) !important;
+    color: rgba(255, 255, 255, 0.45) !important;
     font-weight: 700 !important;
-    font-size: 0.75rem !important;
+    font-size: 0.72rem !important;
     letter-spacing: 1.2px;
-    padding: 1.5rem 1rem 0.5rem 1.8rem !important;
+    padding: 1.1rem 1rem 0.35rem 1.85rem !important;
+    background: transparent !important;
+}
+
+/* === Sidebar collapsed (mini) === */
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .brand-link {
+    justify-content: center;
+    padding: 0.9rem 0.4rem !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .brand-link .brand-image {
+    margin: 0 !important;
+    max-height: 36px !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .brand-link .brand-text,
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .user-panel .info,
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-link p,
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-header {
+    display: none !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .user-panel {
+    justify-content: center;
+    margin: 0.5rem 0.4rem 0.8rem 0.4rem !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .user-panel .image {
+    padding: 0 !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-link {
+    margin: 0 0.45rem !important;
+    padding: 0.7rem 0 !important;
+    text-align: center;
+    width: auto !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-link i.nav-icon {
+    margin: 0 !important;
+    width: 100%;
 }
 
 /* 4. Global Card styling overrides to 'Modern Cards' */

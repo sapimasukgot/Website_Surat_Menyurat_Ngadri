@@ -10,8 +10,14 @@
 
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-user"></i> {{ Auth::user()->name }} <i class="fas fa-caret-down"></i>
+            <a class="nav-link d-flex align-items-center" data-toggle="dropdown" href="#">
+                @if (Auth::user()->photo_url)
+                    <img src="{{ Auth::user()->photo_url }}?v={{ Auth::user()->updated_at?->timestamp }}" alt="Foto"
+                        style="width:26px;height:26px;object-fit:cover;border-radius:50%;margin-right:6px;border:2px solid rgba(255,255,255,0.6);">
+                @else
+                    <i class="far fa-user" style="margin-right:6px;"></i>
+                @endif
+                {{ Auth::user()->name }} <i class="fas fa-caret-down ml-1"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <span class="dropdown-item-text text-muted small">{{ Auth::user()->jabatan ?? 'Admin' }}</span>

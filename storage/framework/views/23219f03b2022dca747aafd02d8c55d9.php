@@ -139,6 +139,91 @@ unset($__errorArgs, $__bag); ?>
         </div>
     </div>
 
+<<<<<<< Updated upstream
+=======
+    <!-- Logo Kop Surat -->
+    <div class="card-modern mb-4">
+        <div class="card-header"><span class="card-title"><i class="fas fa-image mr-2"></i> Logo Kop Surat</span></div>
+        <div class="card-body">
+            <p class="text-muted mb-3">Unggah logo untuk kop surat. Setelah disimpan, logo otomatis diterapkan ke
+                <strong>seluruh template surat</strong> (kiri: logo kabupaten, kanan: logo desa). Surat yang dibuat
+                setelahnya akan memakai logo baru.</p>
+            <form action="<?php echo e(route('settings.logo')); ?>" method="POST" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('PUT'); ?>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label><i class="fas fa-landmark mr-1"></i> Logo Kabupaten (kiri)</label>
+                        <div class="d-flex align-items-center">
+                            <img id="preview-logo_kabupaten"
+                                src="<?php echo e($logoKabupaten ? asset('storage/'.$logoKabupaten).'?v='.time() : ''); ?>"
+                                alt="Logo Kabupaten"
+                                style="height:52px;width:52px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;padding:3px;margin-right:10px;background:#fff;<?php echo e($logoKabupaten ? '' : 'display:none;'); ?>">
+                            <div class="flex-grow-1">
+                                <input type="file" name="logo_kabupaten" accept=".png,.jpg,.jpeg" data-preview="preview-logo_kabupaten"
+                                    class="form-control-file logo-input <?php $__errorArgs = ['logo_kabupaten'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                <?php $__errorArgs = ['logo_kabupaten'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        </div>
+                        <small class="text-muted">PNG/JPG, maks. 2 MB.
+                            <?php echo e($logoKabupaten ? '' : 'Belum diubah — masih memakai logo bawaan template.'); ?></small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label><i class="fas fa-home mr-1"></i> Logo Desa (kanan)</label>
+                        <div class="d-flex align-items-center">
+                            <img id="preview-logo_desa"
+                                src="<?php echo e($logoDesa ? asset('storage/'.$logoDesa).'?v='.time() : ''); ?>"
+                                alt="Logo Desa"
+                                style="height:52px;width:52px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;padding:3px;margin-right:10px;background:#fff;<?php echo e($logoDesa ? '' : 'display:none;'); ?>">
+                            <div class="flex-grow-1">
+                                <input type="file" name="logo_desa" accept=".png,.jpg,.jpeg" data-preview="preview-logo_desa"
+                                    class="form-control-file logo-input <?php $__errorArgs = ['logo_desa'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                <?php $__errorArgs = ['logo_desa'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        </div>
+                        <small class="text-muted">PNG/JPG, maks. 2 MB.
+                            <?php echo e($logoDesa ? '' : 'Belum diatur — sel kanan kop akan diisi saat logo diunggah.'); ?></small>
+                    </div>
+                </div>
+                <button class="btn btn-primary"><i class="fas fa-upload mr-1"></i> Simpan &amp; Terapkan ke Semua
+                    Template</button>
+            </form>
+        </div>
+    </div>
+
+>>>>>>> Stashed changes
     <!-- Activity Row -->
     <div class="card-modern">
         <div class="card-header"><span class="card-title"><i class="fas fa-history mr-2"></i> Aktivitas Terbaru</span></div>
@@ -233,6 +318,24 @@ unset($__errorArgs, $__bag); ?>
                 cutout: '65%'
             }
         });
+<<<<<<< Updated upstream
+=======
+
+        // Pratinjau logo sebelum diunggah
+        document.querySelectorAll('.logo-input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                const file = this.files && this.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                const img = document.getElementById(this.dataset.preview);
+                const reader = new FileReader();
+                reader.onload = e => {
+                    img.src = e.target.result;
+                    img.style.display = 'inline-block';
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+>>>>>>> Stashed changes
     </script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\AhsanDz\Claude\Projects\Surat_menyurat_Ngadri\resources\views/dashboard/index.blade.php ENDPATH**/ ?>

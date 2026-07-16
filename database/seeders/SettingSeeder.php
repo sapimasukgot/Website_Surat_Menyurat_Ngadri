@@ -11,8 +11,13 @@ class SettingSeeder extends Seeder
     {
         $defaults = [
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             'kepala_desa' => 'Sugeng Riyadi',
             'sekretaris_desa' => 'Administrator Desa',
+=======
+            'kepala_desa' => 'NURYASIN',
+            'sekretaris_desa' => 'Sekretaris Desa',
+>>>>>>> Stashed changes
 =======
             'kepala_desa' => 'NURYASIN',
             'sekretaris_desa' => 'Sekretaris Desa',

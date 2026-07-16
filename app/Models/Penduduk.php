@@ -51,6 +51,24 @@ class Penduduk extends Model
         return "{$this->nik} - {$this->nama_lengkap}";
     }
 
+    /**
+     * Anggota keluarga berstatus "Anak" yang berada dalam satu KK
+     * dengan penduduk ini (no_kk sebagai kunci penghubung).
+     */
+    public function anakSatuKk(): \Illuminate\Support\Collection
+    {
+        if (blank($this->no_kk)) {
+            return collect();
+        }
+
+        return static::query()
+            ->where('no_kk', $this->no_kk)
+            ->where('id', '!=', $this->id)
+            ->where('status_hubungan', 'Anak')
+            ->orderBy('tanggal_lahir')
+            ->get();
+    }
+
     public function getJenisKelaminLabelAttribute(): string
     {
         return self::JENIS_KELAMIN[$this->jenis_kelamin] ?? '-';

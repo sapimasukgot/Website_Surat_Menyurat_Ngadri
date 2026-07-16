@@ -699,7 +699,10 @@ Error: source file could not be loaded
 Error: source file could not be loaded
 "} 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 [2026-07-14 13:57:16] local.ERROR: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: administrasi_surat_desa, SQL: select exists (select 1 from information_schema.tables where table_schema = schema() and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 2002): SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: administrasi_surat_desa, SQL: select exists (select 1 from information_schema.tables where table_schema = schema() and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`) at C:/Users/AhsanDz/Claude/Projects/Surat_menyurat_Ngadri/vendor/laravel/framework/src/Illuminate/Database/Connection.php:838)
 [stacktrace]
 #0 C:/Users/AhsanDz/Claude/Projects/Surat_menyurat_Ngadri/vendor/laravel/framework/src/Illuminate/Database/Connection.php(999): Illuminate/Database/Connection->runQueryCallback('select exists (...', Array, Object(Closure))
@@ -803,4 +806,7 @@ Error: source file could not be loaded
 #52 C:/Users/AhsanDz/Claude/Projects/Surat_menyurat_Ngadri/artisan(13): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
 #53 {main}
 "} 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

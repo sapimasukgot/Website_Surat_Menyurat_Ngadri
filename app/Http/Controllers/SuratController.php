@@ -69,8 +69,12 @@ class SuratController extends Controller
             'penduduk_id' => $penduduk->id,
             'user_id' => $request->user()->id,
             'tanggal_surat' => $tanggal,
+<<<<<<< Updated upstream
             'data_surat' => $this->buildSnapshot($penduduk, $request->input('data', []), $role),
             'keterangan' => $request->input('keterangan'),
+=======
+            'data_surat' => $this->buildSnapshot($penduduk, $jenis, $request->input('data', []), $role),
+>>>>>>> Stashed changes
         ]);
 
         return redirect()->route('surat.edit', $surat)
@@ -108,7 +112,10 @@ class SuratController extends Controller
         $surat->update([
             'nomor_surat' => $request->input('nomor_surat'),
             'tanggal_surat' => Carbon::parse($request->input('tanggal_surat')),
+<<<<<<< Updated upstream
             'keterangan' => $request->input('keterangan'),
+=======
+>>>>>>> Stashed changes
             'data_surat' => $data,
         ]);
 
@@ -161,9 +168,16 @@ class SuratController extends Controller
         return redirect()->route('surat.index')->with('success', 'Surat berhasil dihapus.');
     }
 
+<<<<<<< Updated upstream
     private function buildSnapshot(Penduduk $p, array $additional, string $role = 'kepala_desa'): array
     {
         $signer = Setting::penandatangan($role);
+=======
+    private function buildSnapshot(Penduduk $p, JenisSurat $jenis, array $additional, string $role = 'kepala_desa'): array
+    {
+        $signer = Setting::penandatangan($role);
+        $additional = $this->expandAnakFields($jenis, $additional);
+>>>>>>> Stashed changes
 
         $base = [
             'nama' => $p->nama_lengkap,
@@ -194,6 +208,7 @@ class SuratController extends Controller
         ];
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         return array_merge($base, array_filter($additional, fn ($v) => $v !== null), $signature);
 =======
         return array_merge($base, array_filter($additional, fn ($v) => $v !== null && $v !== ''), $signature);
@@ -202,6 +217,46 @@ class SuratController extends Controller
 
     private function penandatanganOptions(): array
     {
+=======
+        return array_merge($base, array_filter($additional, fn ($v) => $v !== null && $v !== ''), $signature);
+    }
+
+    /**
+     * Field bertipe anak_kk berisi ID penduduk (anak). Diubah menjadi
+     * kumpulan placeholder siap pakai: ${anak}, ${nama_anak}, ${nik_anak},
+     * ${tempat_lahir_anak}, ${tanggal_lahir_anak}, ${jenis_kelamin_anak}.
+     */
+    private function expandAnakFields(JenisSurat $jenis, array $additional): array
+    {
+        foreach ($jenis->additionalFields() as $field) {
+            if ($field['type'] !== 'anak_kk') {
+                continue;
+            }
+
+            $name = $field['name'];
+            $anakId = $additional[$name] ?? null;
+            unset($additional[$name]);
+
+            $anak = $anakId ? Penduduk::find($anakId) : null;
+
+            if (! $anak) {
+                continue;
+            }
+
+            $additional[$name] = "{$anak->nama_lengkap} ({$anak->nik})";
+            $additional["nama_{$name}"] = $anak->nama_lengkap;
+            $additional["nik_{$name}"] = $anak->nik;
+            $additional["tempat_lahir_{$name}"] = $anak->tempat_lahir;
+            $additional["tanggal_lahir_{$name}"] = $anak->tanggal_lahir?->format('d-m-Y');
+            $additional["jenis_kelamin_{$name}"] = $anak->jenis_kelamin_label;
+        }
+
+        return $additional;
+    }
+
+    private function penandatanganOptions(): array
+    {
+>>>>>>> Stashed changes
         return [
             'kepala_desa' => Setting::get('kepala_desa', ''),
             'sekretaris_desa' => Setting::get('sekretaris_desa', ''),
