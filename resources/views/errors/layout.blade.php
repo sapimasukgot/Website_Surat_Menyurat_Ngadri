@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 
-<body class="theme-@yield('theme', 'matrix')">
+<body class="theme-@yield('theme', 'fish')">
 
     @if(trim($__env->yieldContent('theme')) === 'matrix')
         <canvas id="matrix"></canvas>

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="<?php echo e(asset('css/style.css')); ?>">
 </head>
 
-<body class="theme-<?php echo $__env->yieldContent('theme', 'matrix'); ?>">
+<body class="theme-<?php echo $__env->yieldContent('theme', 'fish'); ?>">
 
     <?php if(trim($__env->yieldContent('theme')) === 'matrix'): ?>
         <canvas id="matrix"></canvas>
