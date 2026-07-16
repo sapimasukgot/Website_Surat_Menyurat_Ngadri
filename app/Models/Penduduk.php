@@ -16,7 +16,8 @@ class Penduduk extends Model
 
     protected $fillable = [
         'nik', 'no_kk', 'nama_lengkap', 'tempat_lahir', 'tanggal_lahir',
-        'jenis_kelamin', 'agama', 'pendidikan', 'pekerjaan', 'status_kawin',
+        'jenis_kelamin', 'golongan_darah', 'agama', 'pendidikan', 'pekerjaan',
+        'status_kawin', 'status_hubungan', 'nama_ayah', 'nama_ibu',
         'alamat', 'rt', 'rw', 'dusun', 'no_hp',
     ];
 
@@ -33,6 +34,13 @@ class Penduduk extends Model
 
     public const AGAMA = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
 
+    public const GOLONGAN_DARAH = ['A', 'B', 'AB', 'O', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Tidak Tahu'];
+
+    public const STATUS_HUBUNGAN = [
+        'Kepala Keluarga', 'Suami', 'Istri', 'Anak', 'Menantu', 'Cucu',
+        'Orang Tua', 'Mertua', 'Famili Lain', 'Pembantu', 'Lainnya',
+    ];
+
     public function surats(): HasMany
     {
         return $this->hasMany(Surat::class);
@@ -41,6 +49,24 @@ class Penduduk extends Model
     public function getLabelAttribute(): string
     {
         return "{$this->nik} - {$this->nama_lengkap}";
+    }
+
+    /**
+     * Anggota keluarga berstatus "Anak" yang berada dalam satu KK
+     * dengan penduduk ini (no_kk sebagai kunci penghubung).
+     */
+    public function anakSatuKk(): \Illuminate\Support\Collection
+    {
+        if (blank($this->no_kk)) {
+            return collect();
+        }
+
+        return static::query()
+            ->where('no_kk', $this->no_kk)
+            ->where('id', '!=', $this->id)
+            ->where('status_hubungan', 'Anak')
+            ->orderBy('tanggal_lahir')
+            ->get();
     }
 
     public function getJenisKelaminLabelAttribute(): string

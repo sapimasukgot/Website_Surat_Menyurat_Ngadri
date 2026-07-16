@@ -5,6 +5,7 @@ use App\Http\Requests\StoreSuratRequest;
 use App\Http\Requests\UpdateSuratRequest;
 use App\Models\JenisSurat;
 use App\Models\Penduduk;
+use App\Models\Setting;
 use App\Models\Surat;
 use App\Services\NomorSuratService;
 use App\Services\SuratGeneratorService;
@@ -51,6 +52,7 @@ class SuratController extends Controller
             'jenisList' => JenisSurat::where('is_active', true)->orderBy('nama_surat')
                 ->get(['id', 'nama_surat', 'kode_surat', 'fields']),
             'penduduks' => Penduduk::orderBy('nama_lengkap')->get(['id', 'nik', 'nama_lengkap']),
+            'penandatanganList' => $this->penandatanganOptions(),
         ]);
     }
 
@@ -59,6 +61,7 @@ class SuratController extends Controller
         $jenis = JenisSurat::findOrFail($request->integer('jenis_surat_id'));
         $penduduk = Penduduk::findOrFail($request->integer('penduduk_id'));
         $tanggal = Carbon::parse($request->input('tanggal_surat'));
+        $role = $request->input('penandatangan_role', 'kepala_desa');
 
         $surat = Surat::create([
             'nomor_surat' => $this->nomorService->generate($jenis, $tanggal),
@@ -66,8 +69,7 @@ class SuratController extends Controller
             'penduduk_id' => $penduduk->id,
             'user_id' => $request->user()->id,
             'tanggal_surat' => $tanggal,
-            'data_surat' => $this->buildSnapshot($penduduk, $request->input('data', [])),
-            'keterangan' => $request->input('keterangan'),
+            'data_surat' => $this->buildSnapshot($penduduk, $jenis, $request->input('data', []), $role),
         ]);
 
         return redirect()->route('surat.edit', $surat)
@@ -85,17 +87,27 @@ class SuratController extends Controller
     {
         $surat->load(['jenisSurat', 'penduduk']);
 
-        return view('surat.edit', compact('surat'));
+        return view('surat.edit', [
+            'surat' => $surat,
+            'penandatanganList' => $this->penandatanganOptions(),
+        ]);
     }
 
     public function update(UpdateSuratRequest $request, Surat $surat): RedirectResponse
     {
+        $role = $request->input('penandatangan_role', 'kepala_desa');
+        $signer = Setting::penandatangan($role);
+
+        $data = array_merge($request->input('data', []), [
+            'penandatangan' => $signer['nama'],
+            'jabatan_ttd' => $signer['jabatan'],
+            'penandatangan_role' => $role,
+        ]);
 
         $surat->update([
             'nomor_surat' => $request->input('nomor_surat'),
             'tanggal_surat' => Carbon::parse($request->input('tanggal_surat')),
-            'keterangan' => $request->input('keterangan'),
-            'data_surat' => $request->input('data'),
+            'data_surat' => $data,
         ]);
 
         return redirect()->route('surat.show', $surat)->with('success', 'Isi surat berhasil disimpan.');
@@ -119,14 +131,21 @@ class SuratController extends Controller
             $surat->update(['file_path' => $this->generator->generate($surat)]);
         }
 
-        return Storage::disk('public')->download($surat->file_path, $this->filename($surat));
+        return Storage::disk('public')->download($surat->file_path, $this->filename($surat, 'docx'));
     }
 
-    public function print(Surat $surat): StreamedResponse
+    public function print(Surat $surat): mixed
     {
-        $surat->update(['file_path' => $this->generator->generate($surat)]);
+        try {
+            $surat->update(['file_path' => $this->generator->generate($surat)]);
+        } catch (RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
-        return Storage::disk('public')->download($surat->file_path, $this->filename($surat));
+        return view('surat.print', [
+            'surat' => $surat,
+            'docxUrl' => route('surat.download', $surat),
+        ]);
     }
 
     public function destroy(Surat $surat): RedirectResponse
@@ -140,8 +159,11 @@ class SuratController extends Controller
         return redirect()->route('surat.index')->with('success', 'Surat berhasil dihapus.');
     }
 
-    private function buildSnapshot(Penduduk $p, array $additional): array
+    private function buildSnapshot(Penduduk $p, JenisSurat $jenis, array $additional, string $role = 'kepala_desa'): array
     {
+        $signer = Setting::penandatangan($role);
+        $additional = $this->expandAnakFields($jenis, $additional);
+
         $base = [
             'nama' => $p->nama_lengkap,
             'nik' => $p->nik,
@@ -149,10 +171,14 @@ class SuratController extends Controller
             'tempat_lahir' => $p->tempat_lahir,
             'tanggal_lahir' => $p->tanggal_lahir?->format('d-m-Y'),
             'jenis_kelamin' => $p->jenis_kelamin_label,
+            'golongan_darah' => $p->golongan_darah,
             'agama' => $p->agama,
             'pendidikan' => $p->pendidikan,
             'pekerjaan' => $p->pekerjaan,
             'status_kawin' => $p->status_kawin,
+            'status_hubungan' => $p->status_hubungan,
+            'nama_ayah' => $p->nama_ayah,
+            'nama_ibu' => $p->nama_ibu,
             'alamat' => $p->alamat,
             'rt' => $p->rt,
             'rw' => $p->rw,
@@ -160,11 +186,58 @@ class SuratController extends Controller
             'no_hp' => $p->no_hp,
         ];
 
-        return array_merge($base, array_filter($additional, fn ($v) => $v !== null));
+        $signature = [
+            'penandatangan' => $signer['nama'],
+            'jabatan_ttd' => $signer['jabatan'],
+            'penandatangan_role' => $role,
+        ];
+
+        return array_merge($base, array_filter($additional, fn ($v) => $v !== null && $v !== ''), $signature);
     }
 
-    private function filename(Surat $surat): string
+    /**
+     * Field bertipe anak_kk berisi ID penduduk (anak). Diubah menjadi
+     * kumpulan placeholder siap pakai: ${anak}, ${nama_anak}, ${nik_anak},
+     * ${tempat_lahir_anak}, ${tanggal_lahir_anak}, ${jenis_kelamin_anak}.
+     */
+    private function expandAnakFields(JenisSurat $jenis, array $additional): array
     {
-        return str_replace('/', '-', $surat->nomor_surat).'.docx';
+        foreach ($jenis->additionalFields() as $field) {
+            if ($field['type'] !== 'anak_kk') {
+                continue;
+            }
+
+            $name = $field['name'];
+            $anakId = $additional[$name] ?? null;
+            unset($additional[$name]);
+
+            $anak = $anakId ? Penduduk::find($anakId) : null;
+
+            if (! $anak) {
+                continue;
+            }
+
+            $additional[$name] = "{$anak->nama_lengkap} ({$anak->nik})";
+            $additional["nama_{$name}"] = $anak->nama_lengkap;
+            $additional["nik_{$name}"] = $anak->nik;
+            $additional["tempat_lahir_{$name}"] = $anak->tempat_lahir;
+            $additional["tanggal_lahir_{$name}"] = $anak->tanggal_lahir?->format('d-m-Y');
+            $additional["jenis_kelamin_{$name}"] = $anak->jenis_kelamin_label;
+        }
+
+        return $additional;
+    }
+
+    private function penandatanganOptions(): array
+    {
+        return [
+            'kepala_desa' => Setting::get('kepala_desa', ''),
+            'sekretaris_desa' => Setting::get('sekretaris_desa', ''),
+        ];
+    }
+
+    private function filename(Surat $surat, string $ext = 'docx'): string
+    {
+        return str_replace('/', '-', $surat->nomor_surat).'.'.$ext;
     }
 }

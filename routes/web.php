@@ -2,15 +2,19 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JenisSuratController;
 use App\Http\Controllers\PendudukController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SuratController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('dashboard'));
+Route::get('/', fn() => redirect()->route('dashboard'));
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::put('pengaturan/pejabat', [SettingController::class, 'updatePejabat'])->name('settings.pejabat');
+    Route::put('pengaturan/logo', [SettingController::class, 'updateLogo'])->name('settings.logo');
 
     Route::get('penduduk/export', [PendudukController::class, 'export'])->name('penduduk.export');
+    Route::get('penduduk/{penduduk}/keluarga', [PendudukController::class, 'keluarga'])->name('penduduk.keluarga');
     Route::get('penduduk/import', [PendudukController::class, 'importForm'])->name('penduduk.import.form');
     Route::post('penduduk/import', [PendudukController::class, 'import'])->name('penduduk.import');
     Route::resource('penduduk', PendudukController::class);
@@ -27,4 +31,4 @@ Route::middleware('auth')->group(function () {
     Route::resource('surat', SuratController::class);
 });
 
-re
+require __DIR__ . '/auth.php';

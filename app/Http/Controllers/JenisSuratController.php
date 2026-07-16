@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreJenisSuratRequest;
 use App\Http\Requests\UpdateJenisSuratRequest;
 use App\Models\JenisSurat;
+use App\Services\TemplateLogoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -101,6 +102,13 @@ class JenisSuratController extends Controller
     {
         $safeName = Str::random(20).'.docx';
         $path = $file->storeAs(self::TEMPLATE_DIR, $safeName, 'public');
+
+        // Terapkan logo kop (jika sudah diatur) ke template yang baru diunggah.
+        try {
+            app(TemplateLogoService::class)->applyToTemplate(Storage::disk('public')->path($path));
+        } catch (\Throwable $e) {
+            // Template tetap tersimpan walau logo gagal diterapkan.
+        }
 
         return [
             'template_path' => $path,

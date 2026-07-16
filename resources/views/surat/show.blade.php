@@ -16,10 +16,16 @@
                     <tr><th>Dibuat oleh</th><td>{{ $surat->user->name ?? '-' }}</td></tr>
                 </table>
                 <h6 class="text-primary"><i class="fas fa-file-alt mr-1"></i> Isi Surat</h6>
+                @php($reserved = ['penandatangan', 'jabatan_ttd', 'penandatangan_role'])
                 <table class="table table-sm table-bordered">
                     @foreach ($surat->data_surat as $key => $value)
+                        @continue(in_array($key, $reserved))
                         <tr><th width="30%">{{ \Illuminate\Support\Str::title(str_replace('_', ' ', $key)) }}</th><td>{{ is_array($value) ? implode(', ', $value) : $value }}</td></tr>
                     @endforeach
+                    <tr class="table-light">
+                        <th width="30%"><i class="fas fa-user-tie mr-1"></i> Penandatangan</th>
+                        <td>{{ $surat->data('penandatangan', '-') }} <span class="text-muted">({{ $surat->data('jabatan_ttd', 'Kepala Desa') }})</span></td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -37,11 +43,11 @@
 
                 @if ($surat->hasFile())
                     <hr>
-                    <a href="{{ route('surat.download', $surat) }}" class="btn btn-success btn-block"><i class="fas fa-download"></i> Unduh .docx</a>
-                    <a href="{{ route('surat.print', $surat) }}" class="btn btn-outline-primary btn-block"><i class="fas fa-print"></i> Cetak Ulang (regenerasi)</a>
-                    <p class="small text-muted mt-2 mb-0">Berkas siap dibuka di Microsoft Word untuk dicetak.</p>
+                    <a href="{{ route('surat.print', $surat) }}" target="_blank" class="btn btn-primary btn-block"><i class="fas fa-print"></i> Print (cetak langsung)</a>
+                    <a href="{{ route('surat.download', $surat) }}" class="btn btn-success btn-block"><i class="fas fa-file-word"></i> Unduh .docx</a>
+                    <p class="small text-muted mt-2 mb-0">Print membuka dialog cetak langsung di browser. .docx untuk diedit di Microsoft Word.</p>
                 @else
-                    <p class="small text-muted mt-2">Berkas .docx belum dibuat. Klik tombol di atas untuk menghasilkannya.</p>
+                    <p class="small text-muted mt-2">Berkas belum dibuat. Klik tombol di atas untuk menghasilkannya.</p>
                 @endif
 
                 <hr>
