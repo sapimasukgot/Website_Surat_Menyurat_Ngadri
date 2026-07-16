@@ -24,7 +24,8 @@ class SuratController extends Controller
     public function __construct(
         private readonly NomorSuratService $nomorService,
         private readonly SuratGeneratorService $generator,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request): View
     {
@@ -34,9 +35,9 @@ class SuratController extends Controller
         $surats = Surat::query()
             ->with(['jenisSurat', 'penduduk', 'user'])
             ->search($request->get('q'))
-            ->when($request->get('jenis_surat_id'), fn ($q, $v) => $q->where('jenis_surat_id', $v))
-            ->when($request->get('dari'), fn ($q, $v) => $q->whereDate('tanggal_surat', '>=', $v))
-            ->when($request->get('sampai'), fn ($q, $v) => $q->whereDate('tanggal_surat', '<=', $v))
+            ->when($request->get('jenis_surat_id'), fn($q, $v) => $q->where('jenis_surat_id', $v))
+            ->when($request->get('dari'), fn($q, $v) => $q->whereDate('tanggal_surat', '>=', $v))
+            ->when($request->get('sampai'), fn($q, $v) => $q->whereDate('tanggal_surat', '<=', $v))
             ->orderBy($sort, $direction)
             ->paginate(15)
             ->withQueryString();
@@ -129,7 +130,7 @@ class SuratController extends Controller
 
     public function download(Surat $surat): StreamedResponse
     {
-        if (! $surat->hasFile()) {
+        if (!$surat->hasFile()) {
             $surat->update(['file_path' => $this->generator->generate($surat)]);
         }
 
@@ -193,11 +194,7 @@ class SuratController extends Controller
             'penandatangan_role' => $role,
         ];
 
-<<<<<<< Updated upstream
-        return array_merge($base, array_filter($additional, fn ($v) => $v !== null), $signature);
-=======
-        return array_merge($base, array_filter($additional, fn ($v) => $v !== null && $v !== ''), $signature);
->>>>>>> Stashed changes
+        return array_merge($base, array_filter($additional, fn($v) => $v !== null && $v !== ''), $signature);
     }
 
     private function penandatanganOptions(): array
@@ -210,6 +207,6 @@ class SuratController extends Controller
 
     private function filename(Surat $surat, string $ext = 'docx'): string
     {
-        return str_replace('/', '-', $surat->nomor_surat).'.'.$ext;
+        return str_replace('/', '-', $surat->nomor_surat) . '.' . $ext;
     }
 }
