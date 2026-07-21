@@ -46,6 +46,17 @@ Aplikasi web internal untuk perangkat desa dalam membuat berbagai jenis surat se
 - MySQL 8 / MariaDB 10.4+
 - (Opsional) Node.js 18+ bila ingin membangun aset via Vite
 
+> Tidak perlu LibreOffice atau dependency tambahan apa pun untuk mencetak. Fitur **Print** me-render `.docx` langsung di browser lalu membuka dialog cetak.
+
+### Unduh & Cetak Surat
+
+Setelah surat dibuat, tersedia dua aksi:
+
+- **Print (cetak langsung)** — membuka halaman yang me-render berkas `.docx` di dalam browser (memakai `docx-preview`) lalu **otomatis menampilkan dialog cetak (Ctrl+P)**. Tidak perlu mengunduh atau membuka Microsoft Word, dan tidak butuh software tambahan di komputer/server.
+- **Unduh .docx** — mengunduh berkas Word untuk diedit di Microsoft Word bila diperlukan.
+
+Halaman Print memuat pustaka `docx-preview` & `jszip` via CDN, sehingga komputer klien perlu akses internet saat pertama kali mencetak (untuk memuat pustaka tersebut).
+
 ---
 
 ## Instalasi

@@ -13,9 +13,14 @@ class ImportLog extends Model
     protected $table = 'import_logs';
 
     protected $fillable = [
-        'user_id', 'file_name', 'total_rows',
+        'user_id', 'context', 'file_name', 'total_rows',
         'inserted_count', 'updated_count', 'failed_count', 'errors', 'status',
     ];
+
+    public function scopeContext($query, string $context)
+    {
+        return $query->where('context', $context);
+    }
 
     protected function casts(): array
     {

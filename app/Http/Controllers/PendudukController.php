@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePendudukRequest;
 use App\Models\ImportLog;
 use App\Models\Penduduk;
 use App\Services\PendudukImportService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -55,6 +56,23 @@ class PendudukController extends Controller
         return view('penduduk.show', compact('penduduk'));
     }
 
+    /**
+     * Daftar anak dalam satu KK dengan penduduk (untuk dropdown pada form surat).
+     */
+    public function keluarga(Penduduk $penduduk): JsonResponse
+    {
+        return response()->json([
+            'no_kk' => $penduduk->no_kk,
+            'anak' => $penduduk->anakSatuKk()->map(fn (Penduduk $a) => [
+                'id' => $a->id,
+                'nik' => $a->nik,
+                'nama' => $a->nama_lengkap,
+                'jenis_kelamin' => $a->jenis_kelamin_label,
+                'tanggal_lahir' => $a->tanggal_lahir?->format('d-m-Y'),
+            ])->values(),
+        ]);
+    }
+
     public function edit(Penduduk $penduduk): View
     {
         return view('penduduk.edit', compact('penduduk'));
@@ -76,7 +94,7 @@ class PendudukController extends Controller
 
     public function importForm(): View
     {
-        $lastLog = ImportLog::with('user')->latest()->first();
+        $lastLog = ImportLog::with('user')->context('penduduk')->latest()->first();
 
         return view('penduduk.import', compact('lastLog'));
     }

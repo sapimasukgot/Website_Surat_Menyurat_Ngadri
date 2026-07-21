@@ -21,6 +21,7 @@ class PendudukImportService
 
         return ImportLog::create([
             'user_id' => $user->id,
+            'context' => 'penduduk',
             'file_name' => $file->getClientOriginalName(),
             'total_rows' => $import->total,
             'inserted_count' => $import->inserted,
