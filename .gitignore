@@ -22,3 +22,6 @@ yarn-error.log
 /.vscode
 
 /akun
+/storage/framework
+storage/logs/laravel.log
+storage/logs/laravel.log
