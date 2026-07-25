@@ -64,14 +64,13 @@
                     <div class="filter-actions">
                         <button type="submit" class="btn btn-filter"><i class="fas fa-search"></i> Cari</button>
                         <a href="{{ route('penduduk.index') }}" class="btn btn-reset">Reset</a>
-                        <button type="button" class="btn btn-reset" data-toggle="collapse"
-                            data-target="#advancedFilters" aria-expanded="{{ $advancedActive ? 'true' : 'false' }}">
+                        <button type="button" class="btn btn-reset" id="toggleAdvancedFilters"
+                            aria-expanded="{{ $advancedActive ? 'true' : 'false' }}">
                             <i class="fas fa-sliders-h"></i> Filter Lanjutan
                         </button>
                     </div>
 
-                    <div id="advancedFilters" class="collapse {{ $advancedActive ? 'show' : '' }}"
-                        style="width:100%;display:flex;flex-wrap:wrap;gap:0.75rem 1rem;">
+                    <div id="advancedFilters" style="width:100%;flex-wrap:wrap;gap:0.75rem 1rem;display:{{ $advancedActive ? 'flex' : 'none' }};">
                         <div class="filter-group">
                             <label>Agama</label>
                             <select name="agama" class="form-control">
@@ -213,3 +212,14 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('toggleAdvancedFilters').addEventListener('click', function () {
+            var panel = document.getElementById('advancedFilters');
+            var isHidden = panel.style.display === 'none';
+            panel.style.display = isHidden ? 'flex' : 'none';
+            this.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+        });
+    </script>
+@endpush

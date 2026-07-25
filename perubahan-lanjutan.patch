@@ -1,0 +1,141 @@
+diff --git a/app/Services/NomorSuratService.php b/app/Services/NomorSuratService.php
+index d91c6ce..12e7290 100644
+--- a/app/Services/NomorSuratService.php
++++ b/app/Services/NomorSuratService.php
+@@ -13,12 +13,23 @@ class NomorSuratService
+     {
+         $urut = $this->nextSequence($jenisSurat, (int) $tanggal->year);
+ 
+-        return implode('/', [
+-            str_pad((string) $urut, 3, '0', STR_PAD_LEFT),
+-            $jenisSurat->kode_surat,
+-            config('desa.kode'),
+-            self::ROMAWI[$tanggal->month],
+-            $tanggal->year,
++        $format = config('nomor_surat.formats.'.$jenisSurat->kode_surat)
++            ?? config('nomor_surat.default_format')
++            ?? '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}';
++
++        return strtr($format, [
++            '{urut}' => (string) $urut,
++            '{urut2}' => str_pad((string) $urut, 2, '0', STR_PAD_LEFT),
++            '{urut3}' => str_pad((string) $urut, 3, '0', STR_PAD_LEFT),
++            '{urut4}' => str_pad((string) $urut, 4, '0', STR_PAD_LEFT),
++            '{kode_surat}' => $jenisSurat->kode_surat,
++            '{kode_desa}' => config('desa.kode'),
++            '{bulan}' => (string) $tanggal->month,
++            '{bulan2}' => str_pad((string) $tanggal->month, 2, '0', STR_PAD_LEFT),
++            '{bulan_romawi}' => self::ROMAWI[$tanggal->month],
++            // Tahun selalu mengikuti tanggal surat yang dipilih (default: tanggal hari ini
++            // sesuai kalender/server), bukan angka tetap — jadi otomatis berganti tiap tahun.
++            '{tahun}' => (string) $tanggal->year,
+         ]);
+     }
+ 
+diff --git a/config/nomor_surat.php b/config/nomor_surat.php
+new file mode 100644
+index 0000000..ae75125
+--- /dev/null
++++ b/config/nomor_surat.php
+@@ -0,0 +1,60 @@
++<?php
++
++return [
++
++    /*
++    |--------------------------------------------------------------------------
++    | Format Nomor Surat
++    |--------------------------------------------------------------------------
++    |
++    | Placeholder yang bisa dipakai di format:
++    |   {urut}          nomor urut polos, mis. 7
++    |   {urut2}         nomor urut 2 digit, mis. 07
++    |   {urut3}         nomor urut 3 digit, mis. 007
++    |   {urut4}         nomor urut 4 digit, mis. 0007
++    |   {kode_surat}    kode dari menu Jenis Surat, mis. SKTM
++    |   {kode_desa}     dari .env DESA_KODE / config/desa.php
++    |   {bulan}         angka bulan, mis. 7
++    |   {bulan2}        angka bulan 2 digit, mis. 07
++    |   {bulan_romawi}  angka bulan romawi, mis. VII
++    |   {tahun}         tahun 4 digit, DIAMBIL DARI TANGGAL SURAT (mengikuti
++    |                    tanggal yang dipilih di form, defaultnya hari ini
++    |                    sesuai kalender/tanggal server) — bukan nilai statis.
++    |
++    */
++
++    // Dipakai kalau kode_surat yang bersangkutan tidak ada di 'formats' di bawah.
++    'default_format' => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++
++    // Silakan tambah/ubah baris di bawah ini sesuai format nomor resmi yang
++    // sudah kamu punya untuk masing-masing jenis surat. Key = kode_surat
++    // (lihat kolom "Kode Surat" di menu Jenis Surat).
++    //
++    // Contoh kalau format resmi Surat Keterangan Tidak Mampu adalah
++    // 470/007/409.204.05.2026/2026, kamu bisa isi:
++    //   'SKTM' => '470/{urut3}/{kode_desa}/{tahun}',
++    //
++    'formats' => [
++
++        // 'SKTM'     => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKTM-PLN' => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKTM-BEA' => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKD'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKU'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKDU'     => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKM'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKL'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKH'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKBM'     => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SK'       => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKCK'     => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SIK'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKAW'     => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKT'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKP'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SKBK'     => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++        // 'SPN'      => '{urut3}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}',
++
++    ],
++
++];
+diff --git a/resources/views/penduduk/index.blade.php b/resources/views/penduduk/index.blade.php
+index ba89f7d..3aebea5 100644
+--- a/resources/views/penduduk/index.blade.php
++++ b/resources/views/penduduk/index.blade.php
+@@ -64,14 +64,13 @@
+                     <div class="filter-actions">
+                         <button type="submit" class="btn btn-filter"><i class="fas fa-search"></i> Cari</button>
+                         <a href="{{ route('penduduk.index') }}" class="btn btn-reset">Reset</a>
+-                        <button type="button" class="btn btn-reset" data-toggle="collapse"
+-                            data-target="#advancedFilters" aria-expanded="{{ $advancedActive ? 'true' : 'false' }}">
++                        <button type="button" class="btn btn-reset" id="toggleAdvancedFilters"
++                            aria-expanded="{{ $advancedActive ? 'true' : 'false' }}">
+                             <i class="fas fa-sliders-h"></i> Filter Lanjutan
+                         </button>
+                     </div>
+ 
+-                    <div id="advancedFilters" class="collapse {{ $advancedActive ? 'show' : '' }}"
+-                        style="width:100%;display:flex;flex-wrap:wrap;gap:0.75rem 1rem;">
++                    <div id="advancedFilters" style="width:100%;flex-wrap:wrap;gap:0.75rem 1rem;display:{{ $advancedActive ? 'flex' : 'none' }};">
+                         <div class="filter-group">
+                             <label>Agama</label>
+                             <select name="agama" class="form-control">
+@@ -212,4 +211,15 @@
+             </div>
+         </div>
+     </div>
+-@endsection
+\ No newline at end of file
++@endsection
++
++@push('scripts')
++    <script>
++        document.getElementById('toggleAdvancedFilters').addEventListener('click', function () {
++            var panel = document.getElementById('advancedFilters');
++            var isHidden = panel.style.display === 'none';
++            panel.style.display = isHidden ? 'flex' : 'none';
++            this.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
++        });
++    </script>
++@endpush
+\ No newline at end of file
