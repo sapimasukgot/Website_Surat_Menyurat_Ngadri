@@ -52,13 +52,40 @@ class NomorSuratService
         return implode('/', $segments);
     }
 
+    /**
+     * Nomor urut dihitung per KELOMPOK kode klasifikasi (bukan per jenis surat),
+     * karena nomor surat yang dicetak hanya membedakan surat lewat kode klasifikasi,
+     * bukan lewat kode_surat. Jenis surat yang berbagi kode klasifikasi yang sama
+     * (mis. beberapa jenis surat sama-sama "470") harus berbagi satu urutan nomor
+     * yang sama supaya nomor akhirnya tidak pernah bentrok. Jenis surat yang belum
+     * diisi kode klasifikasinya digabung jadi satu kelompok "tanpa klasifikasi".
+     */
     private function nextSequence(JenisSurat $jenisSurat, int $tahun): int
     {
+        $klasifikasi = $this->normalisasiKlasifikasi($jenisSurat->kode_klasifikasi);
+
+        $jenisSuratIds = JenisSurat::query()
+            ->when(
+                $klasifikasi !== null,
+                fn ($q) => $q->where('kode_klasifikasi', $klasifikasi),
+                fn ($q) => $q->where(function ($qq) {
+                    $qq->whereNull('kode_klasifikasi')->orWhere('kode_klasifikasi', '');
+                })
+            )
+            ->pluck('id');
+
         $count = Surat::withTrashed()
-            ->where('jenis_surat_id', $jenisSurat->id)
+            ->whereIn('jenis_surat_id', $jenisSuratIds)
             ->whereYear('tanggal_surat', $tahun)
             ->count();
 
         return $count + 1;
+    }
+
+    private function normalisasiKlasifikasi(?string $kode): ?string
+    {
+        $kode = trim((string) $kode);
+
+        return $kode === '' ? null : $kode;
     }
 }

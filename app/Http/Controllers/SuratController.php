@@ -14,6 +14,7 @@ use App\Services\NomorSuratService;
 use App\Services\SuratGeneratorService;
 use App\Services\SuratImportService;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -174,15 +175,37 @@ class SuratController extends Controller
         $tanggal = Carbon::parse($request->input('tanggal_surat'));
         $role = $request->input('penandatangan_role', 'kepala_desa');
 
-        $surat = Surat::create([
-            'nomor_surat' => $this->nomorService->generate($jenis, $tanggal),
-            'jenis_surat_id' => $jenis->id,
-            'penduduk_id' => $penduduk->id,
-            'user_id' => $request->user()->id,
-            'tanggal_surat' => $tanggal,
-            'pakai_kop' => $request->boolean('pakai_kop'),
-            'data_surat' => $this->buildSnapshot($penduduk, $jenis, $request->input('data', []), $role),
-        ]);
+        $dataSurat = $this->buildSnapshot($penduduk, $jenis, $request->input('data', []), $role);
+
+        // Dua staf yang submit persis di detik yang sama secara teori bisa dapat
+        // nomor urut yang sama (race condition ringan sebelum insert). Kalau itu
+        // terjadi, database akan menolak lewat unique constraint — coba lagi
+        // dengan nomor baru beberapa kali alih-alih menampilkan halaman error.
+        $percobaan = 0;
+
+        do {
+            try {
+                $surat = Surat::create([
+                    'nomor_surat' => $this->nomorService->generate($jenis, $tanggal),
+                    'jenis_surat_id' => $jenis->id,
+                    'penduduk_id' => $penduduk->id,
+                    'user_id' => $request->user()->id,
+                    'tanggal_surat' => $tanggal,
+                    'pakai_kop' => $request->boolean('pakai_kop'),
+                    'data_surat' => $dataSurat,
+                ]);
+
+                break;
+            } catch (QueryException $e) {
+                $percobaan++;
+                $isDuplikat = str_contains(strtolower($e->getMessage()), 'nomor_surat')
+                    || (int) ($e->errorInfo[1] ?? 0) === 1062;
+
+                if (!$isDuplikat || $percobaan >= 3) {
+                    throw $e;
+                }
+            }
+        } while (true);
 
         return redirect()->route('surat.edit', $surat)
             ->with('success', 'Draft surat dibuat. Periksa & sunting isi sebelum membuat berkas final.');

@@ -77,11 +77,10 @@
 <table class="table table-sm" id="fields-table">
     <thead>
         <tr>
-            <th style="width:30%">Label</th>
-            <th style="width:22%">Tipe</th>
-            <th style="width:30%">Pilihan (khusus tipe dropdown)</th>
-            <th style="width:10%">Wajib</th>
-            <th></th>
+            <th>Label</th>
+            <th style="width:40%">Tipe &amp; Pilihan (khusus dropdown)</th>
+            <th style="width:1%; white-space:nowrap;" class="text-center">Wajib</th>
+            <th style="width:1%; white-space:nowrap;"></th>
         </tr>
     </thead>
     <tbody>
@@ -105,14 +104,15 @@
                             <option value="{{ $val }}" @selected(($f['type'] ?? 'text') === $val)>{{ $lbl }}</option>
                         @endforeach
                     </select>
+                    <input type="text" name="fields[{{ $i }}][options]" class="form-control form-control-sm field-options mt-1"
+                        value="{{ $opts }}" placeholder="Pilihan, mis. Ya, Tidak"
+                        @style(['display:none' => ($f['type'] ?? 'text') !== 'select'])>
                 </td>
-                <td><input type="text" name="fields[{{ $i }}][options]" class="form-control form-control-sm field-options"
-                        value="{{ $opts }}" placeholder="Ya, Tidak"
-                        @style(['display:none' => ($f['type'] ?? 'text') !== 'select'])></td>
-                <td><input type="checkbox" name="fields[{{ $i }}][required]" value="1" @checked($f['required'] ?? false)>
+                <td class="text-center" style="white-space:nowrap;"><input type="checkbox"
+                        name="fields[{{ $i }}][required]" value="1" @checked($f['required'] ?? false)>
                 </td>
-                <td><button type="button" class="btn btn-xs btn-danger" onclick="this.closest('tr').remove()"><i
-                            class="fas fa-times"></i></button></td>
+                <td style="white-space:nowrap;"><button type="button" class="btn btn-xs btn-danger"
+                        onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
             </tr>
         @empty
         @endforelse
@@ -155,11 +155,11 @@
                 .map(([val, lbl]) => `<option value="${val}">${lbl}</option>`).join('');
             tr.innerHTML = `
                 <td><input type="hidden" name="fields[${idx}][name]" value="">
-                    <input type="text" name="fields[${idx}][label]" class="form-control form-control-sm"></td>
-                <td><select name="fields[${idx}][type]" class="form-control form-control-sm field-type">${opsi}</select></td>
-                <td><input type="text" name="fields[${idx}][options]" class="form-control form-control-sm field-options" placeholder="Ya, Tidak" style="display:none"></td>
-                <td><input type="checkbox" name="fields[${idx}][required]" value="1"></td>
-                <td><button type="button" class="btn btn-xs btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>`;
+                    <input type="text" name="fields[${idx}][label]" class="form-control form-control-sm" placeholder="Contoh: Keperluan"></td>
+                <td><select name="fields[${idx}][type]" class="form-control form-control-sm field-type">${opsi}</select>
+                    <input type="text" name="fields[${idx}][options]" class="form-control form-control-sm field-options mt-1" placeholder="Pilihan, mis. Ya, Tidak" style="display:none"></td>
+                <td class="text-center" style="white-space:nowrap;"><input type="checkbox" name="fields[${idx}][required]" value="1"></td>
+                <td style="white-space:nowrap;"><button type="button" class="btn btn-xs btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>`;
             document.querySelector('#fields-table tbody').appendChild(tr);
             idx++;
         });

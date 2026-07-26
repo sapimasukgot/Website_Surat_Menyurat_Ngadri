@@ -788,6 +788,18 @@ body {
     box-shadow: none !important;
 }
 
+/* Bootstrap 4 memberi .form-control-sm tinggi tetap yang dihitung dari padding
+   kecil bawaannya (0.25rem). Padding di atas sengaja dibuat lebih lega
+   (0.5rem), jadi tinggi tetap bawaan itu jadi terlalu pendek untuk isinya —
+   akibatnya tulisan di dalam <select>/<input> kecil (mis. tabel Field
+   Tambahan di form Jenis Surat) terpotong di bagian atas. Netralkan tinggi
+   tetapnya supaya kotak menyesuaikan lagi ke padding + isi. */
+.feature-card .form-control-sm,
+.filter-bar .form-control-sm {
+    height: auto !important;
+    line-height: 1.4 !important;
+}
+
 .feature-card .form-control:focus,
 .filter-bar .form-control:focus {
     border-color: var(--brand-primary) !important;
