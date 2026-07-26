@@ -2,12 +2,16 @@
 @section('title', 'Data Penduduk')
 
 @php
+    // Dijaga agar tidak error "Cannot redeclare" bila view ini dirender
+    // lebih dari sekali dalam satu request.
+    if (! function_exists('sortLink')) {
     function sortLink($column, $label, $sort, $direction)
     {
         $dir = ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
         $icon = $sort === $column ? ($direction === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort';
         $q = array_merge(request()->query(), ['sort' => $column, 'direction' => $dir]);
         return '<a href="' . route('penduduk.index', $q) . '" class="text-dark text-decoration-none font-weight-bold">' . $label . ' <i class="fas ' . $icon . ' text-muted small"></i></a>';
+    }
     }
 @endphp
 
@@ -18,7 +22,7 @@
             <h3 class="feature-card-title">
                 <i class="fas fa-users"></i> Daftar Penduduk
             </h3>
-            <div class="d-flex align-items-center gap-2" style="gap: 0.5rem;">
+            <div class="d-flex align-items-center flex-wrap" style="gap: 0.5rem;">
                 <a href="{{ route('penduduk.create') }}" class="header-btn btn-add">
                     <i class="fas fa-plus"></i> Tambah
                 </a>

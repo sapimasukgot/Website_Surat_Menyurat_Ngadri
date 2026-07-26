@@ -13,14 +13,6 @@ class NomorSuratService
     {
         $urut = $this->nextSequence($jenisSurat, (int) $tanggal->year);
 
-<<<<<<< Updated upstream
-        return implode('/', [
-            str_pad((string) $urut, 3, '0', STR_PAD_LEFT),
-            $jenisSurat->kode_surat,
-            config('desa.kode'),
-            self::ROMAWI[$tanggal->month],
-            $tanggal->year,
-=======
         $format = config('nomor_surat.formats.'.$jenisSurat->kode_surat)
             ?? config('nomor_surat.default_format')
             ?? '{kode_klasifikasi}/{urut3}/{kode_desa}/{tahun}';
@@ -41,7 +33,6 @@ class NomorSuratService
             // Tahun selalu mengikuti tanggal surat yang dipilih (default: tanggal hari ini
             // sesuai kalender/server), bukan angka tetap — jadi otomatis berganti tiap tahun.
             '{tahun}' => (string) $tanggal->year,
->>>>>>> Stashed changes
         ]);
 
         return $this->rapikan($nomor);

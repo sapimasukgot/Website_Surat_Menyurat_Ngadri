@@ -2,12 +2,16 @@
 @section('title', 'Riwayat Surat')
 
 @php
+    // Dijaga agar tidak error "Cannot redeclare" bila view ini dirender
+    // lebih dari sekali dalam satu request.
+    if (! function_exists('sortLinkSurat')) {
     function sortLinkSurat($column, $label, $sort, $direction)
     {
         $dir = ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
         $icon = $sort === $column ? ($direction === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort';
         $q = array_merge(request()->query(), ['sort' => $column, 'direction' => $dir]);
         return '<a href="' . route('surat.index', $q) . '" class="text-dark text-decoration-none font-weight-bold">' . $label . ' <i class="fas ' . $icon . ' text-muted small"></i></a>';
+    }
     }
 @endphp
 

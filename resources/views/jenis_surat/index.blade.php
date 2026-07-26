@@ -81,7 +81,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="font-weight-600" style="color:#2D3748;">{{ $js->surats_count }}</span>
+                                    <span class="font-weight-bold" style="color:#2D3748;">{{ $js->surats_count }}</span>
                                 </td>
                                 <td>
                                     @if ($js->is_active)
@@ -118,7 +118,8 @@
             </div>
 
             {{-- Pagination --}}
-            <div class="mt-3">
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="pagination-info">Total {{ $jenisSurats->total() }} jenis surat</span>
                 {{ $jenisSurats->links('pagination::bootstrap-4') }}
             </div>
         </div>

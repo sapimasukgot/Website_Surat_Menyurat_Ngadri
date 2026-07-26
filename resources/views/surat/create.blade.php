@@ -40,7 +40,7 @@
                             <label>Penduduk <span class="text-danger">*</span></label>
                             <select name="penduduk_id"
                                 class="form-control tom-select @error('penduduk_id') is-invalid @enderror"
-                                data-placeholder="Cari NIK / Nama..." required>
+                                placeholder="Cari NIK / Nama..." required>
                                 <option value="">— Pilih Penduduk —</option>
                                 @foreach ($penduduks as $p)
                                     <option value="{{ $p->id }}" @selected(old('penduduk_id') == $p->id)>{{ $p->nik }} —
@@ -108,45 +108,27 @@
 
 @push('styles')
     <style>
-        /* Mengamankan pembungkus TomSelect */
+        /* Tampilan dasar Tom Select sudah ditangani tema bootstrap4 di layout.
+           Di sini hanya sisa penyesuaian posisi agar dropdown tidak tertimpa
+           kotak "Data Tambahan Surat" yang muncul di bawahnya. */
         .ts-wrapper.tom-select {
-            position: relative !important;
+            position: relative;
         }
 
-        /* Memaksa dropdown melayang di atas konten lain */
         .ts-dropdown {
-            position: absolute !important;
-            z-index: 1060 !important;
-            /* Di atas standard elemen bootstrap */
-            background: #ffffff !important;
-            width: 100% !important;
-            left: 0 !important;
-            top: 100% !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-            border: 1px solid #ced4da !important;
-            border-radius: 0.25rem !important;
+            z-index: 1060;
         }
 
-        /* Mematikan efek crash layout pada list item */
         .ts-dropdown .ts-dropdown-content {
             max-height: 200px;
             overflow-y: auto;
         }
 
-        /* Mengamankan area data tambahan di bawahnya */
         #additional-fields {
             clear: both;
             display: block;
             position: relative;
             z-index: 1;
-        }
-
-        .dynamic-fields-box {
-            margin-top: 1.25rem;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #28a745;
         }
     </style>
 @endpush

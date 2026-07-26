@@ -73,6 +73,7 @@
     itu hanya ikut tercetak bila pilihannya <em>Ya</em>. Kedua penanda harus berada di
     <strong>paragraf/barisnya sendiri</strong> di dalam dokumen Word.</p>
 
+<div class="table-responsive">
 <table class="table table-sm" id="fields-table">
     <thead>
         <tr>
@@ -117,6 +118,7 @@
         @endforelse
     </tbody>
 </table>
+</div>
 <button type="button" class="header-btn btn-import mt-2" id="add-field" style="font-size:0.82rem;"><i
         class="fas fa-plus"></i> Tambah Field</button>
 

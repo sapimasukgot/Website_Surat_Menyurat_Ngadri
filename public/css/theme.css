@@ -393,15 +393,26 @@ body {
     font-size: 0.88rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 1.1rem 1.5rem !important;
 }
 
 .table td {
-    padding: 1.1rem 1.5rem !important;
     border-top: 1px solid rgba(0, 0, 0, 0.03) !important;
     vertical-align: middle !important;
     color: #4A5568;
     font-size: 0.95rem;
+}
+
+/* Padding lega hanya untuk tabel ukuran penuh. Tanpa pengecualian ini,
+   .table-sm (dipakai di halaman detail surat/penduduk dan editor field
+   dinamis) ikut melebar dan isinya terpotong di layar laptop. */
+.table:not(.table-sm) th,
+.table:not(.table-sm) td {
+    padding: 1.1rem 1.5rem;
+}
+
+.table.table-sm th,
+.table.table-sm td {
+    padding: 0.5rem 0.75rem;
 }
 
 .table tbody tr:hover {

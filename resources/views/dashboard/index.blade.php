@@ -206,6 +206,7 @@
     <div class="card-modern">
         <div class="card-header"><span class="card-title"><i class="fas fa-history mr-2"></i> Aktivitas Terbaru</span></div>
         <div class="card-body p-0">
+            <div class="table-responsive">
             <table class="table mb-0">
                 <thead>
                     <tr>
@@ -232,6 +233,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 @endsection

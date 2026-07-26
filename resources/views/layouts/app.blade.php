@@ -13,7 +13,10 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2.0/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+    {{-- Tema Tom Select harus versi bootstrap4, mengikuti Bootstrap yang dimuat di bawah.
+         Tema bootstrap5 memakai variabel --bs-* yang tidak ada di Bootstrap 4, sehingga
+         kotak pencarian penduduk kehilangan garis tepi dan dropdown-nya jadi transparan. --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap4.min.css">
     <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
     @stack('styles')
 </head>

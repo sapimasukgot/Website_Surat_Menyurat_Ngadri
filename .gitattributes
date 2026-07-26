@@ -1,0 +1,23 @@
+# Samakan akhir baris di repositori (LF) agar tidak muncul diff/konflik palsu
+# ketika dikerjakan dari Windows. Di komputer lokal berkas tetap bisa CRLF.
+* text=auto eol=lf
+
+# Berkas Windows yang harus tetap CRLF supaya bisa dijalankan dengan benar.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Berkas biner — jangan diutak-atik akhir barisnya.
+*.docx binary
+*.xlsx binary
+*.xls  binary
+*.pdf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.zip  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
