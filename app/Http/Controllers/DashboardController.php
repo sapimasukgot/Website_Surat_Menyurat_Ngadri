@@ -14,6 +14,9 @@ class DashboardController extends Controller
     {
         $stats = [
             'total_penduduk' => Penduduk::count(),
+            'total_laki' => Penduduk::where('jenis_kelamin', 'L')->count(),
+            'total_perempuan' => Penduduk::where('jenis_kelamin', 'P')->count(),
+            'total_kepala_keluarga' => Penduduk::where('status_hubungan', 'Kepala Keluarga')->count(),
             'total_surat' => Surat::count(),
             'surat_hari_ini' => Surat::whereDate('tanggal_surat', today())->count(),
             'total_jenis' => JenisSurat::where('is_active', true)->count(),

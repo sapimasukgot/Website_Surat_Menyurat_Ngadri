@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::put('pengaturan/logo', [SettingController::class, 'updateLogo'])->name('settings.logo');
 
     Route::get('penduduk/export', [PendudukController::class, 'export'])->name('penduduk.export');
+    Route::get('penduduk/export-adminduk', [PendudukController::class, 'exportAdminduk'])->name('penduduk.export.adminduk');
     Route::get('penduduk/{penduduk}/keluarga', [PendudukController::class, 'keluarga'])->name('penduduk.keluarga');
     Route::get('penduduk/import', [PendudukController::class, 'importForm'])->name('penduduk.import.form');
     Route::post('penduduk/import', [PendudukController::class, 'import'])->name('penduduk.import');

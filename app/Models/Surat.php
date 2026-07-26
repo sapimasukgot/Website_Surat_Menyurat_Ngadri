@@ -17,13 +17,14 @@ class Surat extends Model
 
     protected $fillable = [
         'nomor_surat', 'jenis_surat_id', 'penduduk_id', 'user_id',
-        'tanggal_surat', 'data_surat', 'file_path', 'keterangan',
+        'tanggal_surat', 'pakai_kop', 'data_surat', 'file_path', 'keterangan',
     ];
 
     protected function casts(): array
     {
         return [
             'tanggal_surat' => 'date',
+            'pakai_kop' => 'boolean',
             'data_surat' => 'array',
         ];
     }

@@ -28,6 +28,10 @@
                 <a href="{{ route('penduduk.export') }}" class="header-btn btn-export">
                     <i class="fas fa-file-excel"></i> Export
                 </a>
+                <a href="{{ route('penduduk.export.adminduk') }}" class="header-btn btn-export"
+                    title="Rekap jumlah penduduk per kategori & per umur (format laporan semesteran kantor desa)">
+                    <i class="fas fa-chart-bar"></i> Laporan Adminduk
+                </a>
             </div>
         </div>
 

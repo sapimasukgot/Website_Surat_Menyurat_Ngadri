@@ -20,6 +20,7 @@ class StoreSuratRequest extends FormRequest
             'penduduk_id' => ['required', 'exists:penduduks,id'],
             'tanggal_surat' => ['required', 'date'],
             'penandatangan_role' => ['nullable', Rule::in(['kepala_desa', 'sekretaris_desa'])],
+            'pakai_kop' => ['nullable', 'boolean'],
             'keterangan' => ['nullable', 'string', 'max:1000'],
         ];
 
@@ -33,6 +34,15 @@ class StoreSuratRequest extends FormRequest
                         'integer',
                         Rule::exists('penduduks', 'id'),
                         $this->anakSatuKkRule(),
+                    ];
+
+                    continue;
+                }
+
+                if ($field['type'] === 'select' && filled($field['options'])) {
+                    $rules['data.'.$field['name']] = [
+                        $field['required'] ? 'required' : 'nullable',
+                        Rule::in($field['options']),
                     ];
 
                     continue;

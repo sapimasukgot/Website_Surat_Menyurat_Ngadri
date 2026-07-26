@@ -35,6 +35,7 @@
                     <thead>
                         <tr>
                             <th>Kode</th>
+                            <th>Klasifikasi</th>
                             <th>Nama Surat</th>
                             <th>Field Tambahan</th>
                             <th>Template</th>
@@ -48,6 +49,13 @@
                             <tr>
                                 <td>
                                     <span class="badge-modern badge-blue">{{ $js->kode_surat }}</span>
+                                </td>
+                                <td>
+                                    @if ($js->kode_klasifikasi)
+                                        <span class="badge-modern badge-gray">{{ $js->kode_klasifikasi }}</span>
+                                    @else
+                                        <span class="text-muted" title="Belum diisi — nomor surat dibuat tanpa segmen ini">&mdash;</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <span class="name-primary">{{ $js->nama_surat }}</span>
@@ -99,7 +107,7 @@
                             </tr>
                         @empty
                             <tr class="empty-state">
-                                <td colspan="7">
+                                <td colspan="8">
                                     <i class="fas fa-folder-open"></i>
                                     <div>Belum ada jenis surat yang dibuat.</div>
                                 </td>

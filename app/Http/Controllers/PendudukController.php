@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Exports\AdmindukExport;
 use App\Exports\PendudukExport;
 use App\Http\Requests\ImportPendudukRequest;
 use App\Http\Requests\StorePendudukRequest;
@@ -116,5 +117,23 @@ class PendudukController extends Controller
         $filename = 'data-penduduk-'.now()->format('Ymd-His').'.xlsx';
 
         return Excel::download(new PendudukExport(), $filename);
+    }
+
+    /**
+     * Laporan Adminduk: rekap jumlah penduduk per kategori & per umur,
+     * mengikuti format berkas semesteran milik kantor desa.
+     *
+     * Laporan ini selalu memakai seluruh data penduduk (bukan hasil filter
+     * pada tabel), karena sifatnya rekap resmi satu desa.
+     */
+    public function exportAdminduk(Request $request): BinaryFileResponse
+    {
+        $filename = 'laporan-adminduk-'.now()->format('Ymd-His').'.xlsx';
+
+        $judul = is_string($request->input('judul'))
+            ? (trim($request->input('judul')) ?: null)
+            : null;
+
+        return Excel::download(new AdmindukExport($judul), $filename);
     }
 }

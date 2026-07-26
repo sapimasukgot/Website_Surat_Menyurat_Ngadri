@@ -13,6 +13,13 @@
                 <table class="table table-sm">
                     <tr><th width="30%">Tanggal Surat</th><td>{{ $surat->tanggal_surat?->format('d F Y') }}</td></tr>
                     <tr><th>Penduduk</th><td>{{ $surat->penduduk->nama_lengkap ?? '-' }} ({{ $surat->penduduk->nik ?? '-' }})</td></tr>
+                    <tr><th>Kop Surat</th><td>
+                        @if ($surat->pakai_kop)
+                            <span class="badge badge-success">Dengan kop</span>
+                        @else
+                            <span class="badge badge-secondary">Tanpa kop</span>
+                        @endif
+                    </td></tr>
                     <tr><th>Dibuat oleh</th><td>{{ $surat->user->name ?? '-' }}</td></tr>
                 </table>
                 <h6 class="text-primary"><i class="fas fa-file-alt mr-1"></i> Isi Surat</h6>

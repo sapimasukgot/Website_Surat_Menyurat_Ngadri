@@ -68,6 +68,20 @@
                                 pengaturan perangkat desa pada dashboard.</small>
                         </div>
 
+                        <div class="form-section-title"><i class="fas fa-heading"></i> Kop Surat</div>
+                        <div class="form-group">
+                            <input type="hidden" name="pakai_kop" value="0">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="pakai_kop" name="pakai_kop"
+                                    value="1" @checked(old('pakai_kop', '1') == '1')>
+                                <label class="custom-control-label" for="pakai_kop"
+                                    style="font-size:0.9rem;font-weight:600;color:#4A5568;">Gunakan kop surat</label>
+                            </div>
+                            <small class="text-muted" style="font-size:0.8rem;">Hilangkan centang untuk mencetak surat
+                                <strong>tanpa kop</strong> (mis. Surat Pernyataan). Kop akan dihapus otomatis dari berkas
+                                Word — template tidak perlu diganti.</small>
+                        </div>
+
                         {{-- Dynamic Additional Fields --}}
                         <div id="additional-fields"></div>
                     </div>
@@ -155,7 +169,7 @@
                 return '<option value="">— Tidak ada data anak dalam KK pemohon —</option>';
             }
             return '<option value="">— Pilih Anak —</option>' + anakCache.list.map(a =>
-                `<option value="${a.id}" ${String(selected) === String(a.id) ? 'selected' : ''}>${a.nik} — ${a.nama}</option>`
+                `<option value="${a.id}" ${String(selected) === String(a.id) ? 'selected' : ''}>${esc(a.nik)} — ${esc(a.nama)}</option>`
             ).join('');
         }
 
@@ -179,6 +193,14 @@
             refreshAnakSelects();
         }
 
+        // Nilai lama & label field bisa mengandung tanda kutip — amankan sebelum
+        // disisipkan ke dalam string HTML.
+        function esc(nilai) {
+            return String(nilai ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
         function renderFields(id) {
             container.innerHTML = '';
             const fields = jenisFields[id] || [];
@@ -194,21 +216,51 @@
                 const isLong = f.type === 'textarea';
                 let input;
                 if (f.type === 'anak_kk') {
-                    input = `<select name="data[${f.name}]" class="form-control anak-kk-select" data-old="${val}" ${f.required ? 'required' : ''}></select>
+                    input = `<select name="data[${f.name}]" class="form-control anak-kk-select" data-old="${esc(val)}" ${f.required ? 'required' : ''}></select>
                         <small class="text-muted" style="font-size:0.78rem;">Daftar NIK anak diambil otomatis dari KK pemohon. Data anak (nama, NIK, TTL) otomatis masuk ke surat.</small>`;
+                } else if (f.type === 'select') {
+                    const opsi = (f.options || []).map(o =>
+                        `<option value="${esc(o)}" ${String(val) === String(o) ? 'selected' : ''}>${esc(o)}</option>`).join('');
+                    input = `<select name="data[${f.name}]" class="form-control field-select" data-field="${f.name}" ${f.required ? 'required' : ''}>
+                        <option value="">— Pilih —</option>${opsi}</select>`;
                 } else if (isLong) {
-                    input = `<textarea name="data[${f.name}]" rows="2" class="form-control" ${f.required ? 'required' : ''}>${val}</textarea>`;
+                    input = `<textarea name="data[${f.name}]" rows="2" class="form-control" ${f.required ? 'required' : ''}>${esc(val)}</textarea>`;
                 } else {
-                    input = `<input type="${f.type === 'number' ? 'number' : (f.type === 'date' ? 'date' : 'text')}" name="data[${f.name}]" class="form-control" value="${val}" ${f.required ? 'required' : ''}>`;
+                    input = `<input type="${f.type === 'number' ? 'number' : (f.type === 'date' ? 'date' : 'text')}" name="data[${f.name}]" class="form-control" value="${esc(val)}" ${f.required ? 'required' : ''}>`;
                 }
                 const colClass = isLong ? 'col-12' : 'col-md-6';
                 row.insertAdjacentHTML('beforeend',
-                    `<div class="form-group ${colClass}"><label style="font-size:0.84rem;font-weight:700;color:#4A5568;">${f.label} ${req}</label>${input}</div>`);
+                    `<div class="form-group ${colClass}" data-field-name="${f.name}"><label style="font-size:0.84rem;font-weight:700;color:#4A5568;">${esc(f.label)} ${req}</label>${input}</div>`);
             });
             wrap.appendChild(row);
             container.appendChild(wrap);
             refreshAnakSelects();
+            syncBlokFields();
         }
+
+        /**
+         * Field bertipe select bisa dipakai sebagai saklar blok pada template
+         * (${nama_field} ... ${/nama_field}). Bila pilihannya bukan "Ya", field
+         * lain yang hanya relevan untuk blok itu ikut disembunyikan supaya
+         * operator tidak bingung mengisi data yang tidak akan tercetak.
+         */
+        const blokFields = @json(config('surat.blok_fields', []));
+
+        function syncBlokFields() {
+            container.querySelectorAll('select.field-select').forEach(sel => {
+                const anggota = blokFields[sel.dataset.field];
+                if (!anggota) return;
+                const tampil = sel.value === 'Ya';
+                anggota.forEach(nama => {
+                    const grup = container.querySelector(`[data-field-name="${nama}"]`);
+                    if (grup) grup.style.display = tampil ? '' : 'none';
+                });
+            });
+        }
+
+        container.addEventListener('change', e => {
+            if (e.target.classList.contains('field-select')) syncBlokFields();
+        });
 
         select.addEventListener('change', e => renderFields(e.target.value));
         pendudukSelect.addEventListener('change', e => loadAnak(e.target.value));

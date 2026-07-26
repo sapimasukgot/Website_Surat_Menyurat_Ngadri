@@ -15,12 +15,27 @@ class SuratTest extends TestCase
 
     public function test_nomor_surat_terformat_dengan_benar(): void
     {
-        $jenis = JenisSurat::factory()->create(['kode_surat' => 'SKTM']);
+        $jenis = JenisSurat::factory()->create([
+            'kode_surat' => 'SKTM',
+            'kode_klasifikasi' => '420',
+        ]);
+
         $nomor = app(NomorSuratService::class)->generate($jenis, Carbon::create(2026, 7, 5));
 
-        $this->assertStringContainsString('/SKTM/', $nomor);
-        $this->assertStringContainsString('/VII/2026', $nomor);
-        $this->assertStringStartsWith('001/', $nomor);
+        // Format resmi: {kode klasifikasi}/{nomor urut}/{kode desa}/{tahun}
+        $this->assertSame('420/001/'.config('desa.kode').'/2026', $nomor);
+    }
+
+    public function test_nomor_surat_tanpa_kode_klasifikasi_tidak_menyisakan_garis_miring(): void
+    {
+        $jenis = JenisSurat::factory()->create([
+            'kode_surat' => 'SPN',
+            'kode_klasifikasi' => null,
+        ]);
+
+        $nomor = app(NomorSuratService::class)->generate($jenis, Carbon::create(2026, 7, 5));
+
+        $this->assertSame('001/'.config('desa.kode').'/2026', $nomor);
     }
 
     public function test_membuat_draft_surat_menyimpan_snapshot(): void

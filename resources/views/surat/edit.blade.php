@@ -4,6 +4,8 @@
 @php($longFields = ['alamat', 'keterangan_tambahan', 'alamat_usaha'])
 @php($reserved = ['penandatangan', 'jabatan_ttd', 'penandatangan_role'])
 @php($currentRole = $surat->data_surat['penandatangan_role'] ?? 'kepala_desa')
+{{-- Definisi field dari jenis surat, dipakai agar field bertipe dropdown tetap tampil sebagai dropdown saat disunting. --}}
+@php($fieldDefs = collect($surat->jenisSurat?->additionalFields() ?? [])->keyBy('name'))
 
 @section('content')
     <div class="row">
@@ -40,11 +42,24 @@
                                 <div class="form-row">
                                     @foreach ($surat->data_surat as $key => $value)
                                         @continue(in_array($key, $reserved))
+                                        @php($def = $fieldDefs->get($key))
+                                        @php($isSelect = ($def['type'] ?? null) === 'select' && filled($def['options'] ?? []))
                                         <div class="form-group {{ in_array($key, $longFields) ? 'col-12' : 'col-md-6' }}">
                                             <label style="font-size:0.84rem;font-weight:700;color:#4A5568;">
-                                                {{ \Illuminate\Support\Str::title(str_replace('_', ' ', $key)) }}
+                                                {{ $def['label'] ?? \Illuminate\Support\Str::title(str_replace('_', ' ', $key)) }}
                                             </label>
-                                            @if (in_array($key, $longFields))
+                                            @if ($isSelect)
+                                                <select name="data[{{ $key }}]" class="form-control">
+                                                    @unless (in_array(old('data.' . $key, $value), $def['options'], true))
+                                                        <option value="{{ old('data.' . $key, $value) }}" selected>
+                                                            {{ old('data.' . $key, $value) ?: '— Pilih —' }}</option>
+                                                    @endunless
+                                                    @foreach ($def['options'] as $opt)
+                                                        <option value="{{ $opt }}" @selected(old('data.' . $key, $value) === $opt)>
+                                                            {{ $opt }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @elseif (in_array($key, $longFields))
                                                 <textarea name="data[{{ $key }}]" rows="2"
                                                     class="form-control">{{ old('data.' . $key, $value) }}</textarea>
                                             @else
@@ -70,6 +85,19 @@
                             </select>
                             <small class="text-muted" style="font-size:0.8rem;">Nama penandatangan mengikuti pengaturan
                                 perangkat desa terbaru saat disimpan.</small>
+                        </div>
+
+                        <div class="form-section-title"><i class="fas fa-heading"></i> Kop Surat</div>
+                        <div class="form-group">
+                            <input type="hidden" name="pakai_kop" value="0">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="pakai_kop" name="pakai_kop"
+                                    value="1" @checked(old('pakai_kop', $surat->pakai_kop ? '1' : '0') == '1')>
+                                <label class="custom-control-label" for="pakai_kop"
+                                    style="font-size:0.9rem;font-weight:600;color:#4A5568;">Gunakan kop surat</label>
+                            </div>
+                            <small class="text-muted" style="font-size:0.8rem;">Hilangkan centang untuk mencetak surat
+                                <strong>tanpa kop</strong>. Perubahan berlaku saat berkas Word dibuat ulang.</small>
                         </div>
 
                     </div>

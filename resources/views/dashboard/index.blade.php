@@ -58,6 +58,43 @@
         </div>
     </div>
 
+    <!-- Rincian Penduduk: Laki-laki, Perempuan, Kepala Keluarga -->
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stat-card-modern stat-info">
+                <div>
+                    <div class="stat-icon"><i class="fas fa-male"></i></div>
+                    <div class="stat-value">{{ number_format($stats['total_laki'], 0, ',', '.') }}</div>
+                    <div class="stat-label">Penduduk Laki-laki</div>
+                </div>
+                <a href="{{ route('penduduk.index', ['jenis_kelamin' => 'L']) }}" class="stat-action">Lihat data <i
+                        class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stat-card-modern stat-danger">
+                <div>
+                    <div class="stat-icon"><i class="fas fa-female"></i></div>
+                    <div class="stat-value">{{ number_format($stats['total_perempuan'], 0, ',', '.') }}</div>
+                    <div class="stat-label">Penduduk Perempuan</div>
+                </div>
+                <a href="{{ route('penduduk.index', ['jenis_kelamin' => 'P']) }}" class="stat-action">Lihat data <i
+                        class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stat-card-modern stat-primary">
+                <div>
+                    <div class="stat-icon"><i class="fas fa-house-user"></i></div>
+                    <div class="stat-value">{{ number_format($stats['total_kepala_keluarga'], 0, ',', '.') }}</div>
+                    <div class="stat-label">Kepala Keluarga</div>
+                </div>
+                <a href="{{ route('penduduk.index', ['status_hubungan' => 'Kepala Keluarga']) }}" class="stat-action">Lihat
+                    data <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
     <!-- Charts Row -->
     <div class="row mb-4">
         <div class="col-md-8 mb-3">

@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\JenisSurat;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UpdateJenisSuratRequest extends FormRequest
@@ -19,6 +19,7 @@ class UpdateJenisSuratRequest extends FormRequest
         return [
             'nama_surat' => ['required', 'string', 'max:150'],
             'kode_surat' => ['required', 'string', 'max:20', Rule::unique('jenis_surats', 'kode_surat')->ignore($id)->whereNull('deleted_at')],
+            'kode_klasifikasi' => ['nullable', 'string', 'max:20'],
             'deskripsi' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
             'template' => [
@@ -26,23 +27,16 @@ class UpdateJenisSuratRequest extends FormRequest
                 'mimetypes:application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
             'fields' => ['nullable', 'array'],
+            'fields.*.name' => ['nullable', 'string', 'max:100'],
             'fields.*.label' => ['nullable', 'string', 'max:100'],
-            'fields.*.type' => ['nullable', Rule::in(['text', 'textarea', 'date', 'number', 'anak_kk'])],
+            'fields.*.type' => ['nullable', Rule::in(JenisSurat::FIELD_TYPES)],
             'fields.*.required' => ['nullable'],
+            'fields.*.options' => ['nullable', 'string', 'max:500'],
         ];
     }
 
     public function normalizedFields(): array
     {
-        return collect($this->input('fields', []))
-            ->filter(fn ($f) => filled($f['label'] ?? null))
-            ->map(fn ($f) => [
-                'name' => Str::slug($f['label'], '_'),
-                'label' => trim($f['label']),
-                'type' => $f['type'] ?? 'text',
-                'required' => (bool) ($f['required'] ?? false),
-            ])
-            ->values()
-            ->all();
+        return JenisSurat::normalizeFieldSchema($this->input('fields', []));
     }
 }

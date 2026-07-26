@@ -36,7 +36,7 @@ class JenisSuratController extends Controller
 
     public function store(StoreJenisSuratRequest $request): RedirectResponse
     {
-        $data = $request->safe()->only(['nama_surat', 'kode_surat', 'deskripsi']);
+        $data = $request->safe()->only(['nama_surat', 'kode_surat', 'kode_klasifikasi', 'deskripsi']);
         $data['is_active'] = $request->boolean('is_active');
         $data['fields'] = $request->normalizedFields();
 
@@ -56,7 +56,7 @@ class JenisSuratController extends Controller
 
     public function update(UpdateJenisSuratRequest $request, JenisSurat $jenisSurat): RedirectResponse
     {
-        $data = $request->safe()->only(['nama_surat', 'kode_surat', 'deskripsi']);
+        $data = $request->safe()->only(['nama_surat', 'kode_surat', 'kode_klasifikasi', 'deskripsi']);
         $data['is_active'] = $request->boolean('is_active');
         $data['fields'] = $request->normalizedFields();
 

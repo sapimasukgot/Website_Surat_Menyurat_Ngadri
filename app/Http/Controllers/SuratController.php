@@ -180,6 +180,7 @@ class SuratController extends Controller
             'penduduk_id' => $penduduk->id,
             'user_id' => $request->user()->id,
             'tanggal_surat' => $tanggal,
+            'pakai_kop' => $request->boolean('pakai_kop'),
             'data_surat' => $this->buildSnapshot($penduduk, $jenis, $request->input('data', []), $role),
         ]);
 
@@ -218,6 +219,7 @@ class SuratController extends Controller
         $surat->update([
             'nomor_surat' => $request->input('nomor_surat'),
             'tanggal_surat' => Carbon::parse($request->input('tanggal_surat')),
+            'pakai_kop' => $request->boolean('pakai_kop'),
             'data_surat' => $data,
         ]);
 

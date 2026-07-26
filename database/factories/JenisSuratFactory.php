@@ -17,6 +17,7 @@ class JenisSuratFactory extends Factory
             'nama_surat' => $nama,
             'slug' => Str::slug($nama),
             'kode_surat' => strtoupper(Str::random(4)),
+            'kode_klasifikasi' => '470',
             'deskripsi' => fake()->sentence(),
             'fields' => [
                 ['name' => 'keperluan', 'label' => 'Keperluan', 'type' => 'text', 'required' => false],

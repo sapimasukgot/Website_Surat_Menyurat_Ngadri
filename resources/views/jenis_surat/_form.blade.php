@@ -1,19 +1,36 @@
 @csrf
 <div class="form-section-title"><i class="fas fa-file-alt"></i> Informasi Dasar Surat</div>
 <div class="form-row">
-    <div class="form-group col-md-8">
+    <div class="form-group col-md-6">
         <label>Nama Surat <span class="text-danger">*</span></label>
         <input type="text" name="nama_surat" class="form-control @error('nama_surat') is-invalid @enderror"
             value="{{ old('nama_surat', $jenisSurat->nama_surat) }}" required>
         @error('nama_surat') <span class="invalid-feedback">{{ $message }}</span> @enderror
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-3">
         <label>Kode Surat <span class="text-danger">*</span></label>
         <input type="text" name="kode_surat"
             class="form-control text-uppercase @error('kode_surat') is-invalid @enderror"
             value="{{ old('kode_surat', $jenisSurat->kode_surat) }}" required>
         @error('kode_surat') <span class="invalid-feedback">{{ $message }}</span> @enderror
+        <small class="form-text text-muted">Kode singkat, mis. <code>SKTM</code>.</small>
     </div>
+    <div class="form-group col-md-3">
+        <label>Kode Klasifikasi</label>
+        <input type="text" name="kode_klasifikasi"
+            class="form-control @error('kode_klasifikasi') is-invalid @enderror"
+            value="{{ old('kode_klasifikasi', $jenisSurat->kode_klasifikasi) }}" placeholder="mis. 470">
+        @error('kode_klasifikasi') <span class="invalid-feedback">{{ $message }}</span> @enderror
+        <small class="form-text text-muted">Angka klasifikasi arsip yang muncul di
+            <strong>awal nomor surat</strong> (mis. <code>470</code>, <code>422.5</code>). Kosongkan bila jenis surat ini
+            tidak memakainya.</small>
+    </div>
+</div>
+
+<div class="alert alert-light border" style="font-size:0.83rem;">
+    <i class="fas fa-hashtag mr-1 text-muted"></i> Nomor surat akan otomatis dibuat dengan format
+    <strong>{{ config('nomor_surat.default_format') === '{kode_klasifikasi}/{urut3}/{kode_desa}/{tahun}' ? 'kode klasifikasi / nomor urut / kode desa / tahun' : config('nomor_surat.default_format') }}</strong>
+    — contoh: <code>{{ old('kode_klasifikasi', $jenisSurat->kode_klasifikasi) ?: '470' }}/007/{{ config('desa.kode') }}/{{ date('Y') }}</code>.
 </div>
 
 <div class="form-group">
@@ -49,29 +66,48 @@
     satu KK dengan pemohon. Jika label field-nya "Anak", placeholder yang tersedia: <code>${anak}</code>,
     <code>${nama_anak}</code>, <code>${nik_anak}</code>, <code>${tempat_lahir_anak}</code>,
     <code>${tanggal_lahir_anak}</code>, <code>${jenis_kelamin_anak}</code>.</p>
+<p class="text-muted" style="font-size:0.84rem;">Tipe <strong>Pilihan (dropdown)</strong> menampilkan daftar pilihan yang
+    Anda tentukan sendiri di kolom Pilihan (pisahkan dengan koma, mis. <code>Ya, Tidak</code>). Selain mengisi
+    placeholder biasa, tipe ini bisa dipakai untuk <strong>menampilkan/menyembunyikan satu blok</strong> di template:
+    bungkus bagian yang opsional di file Word dengan <code>${nama_field}</code> ... <code>${/nama_field}</code>, maka blok
+    itu hanya ikut tercetak bila pilihannya <em>Ya</em>. Kedua penanda harus berada di
+    <strong>paragraf/barisnya sendiri</strong> di dalam dokumen Word.</p>
 
 <table class="table table-sm" id="fields-table">
     <thead>
         <tr>
-            <th style="width:40%">Label</th>
-            <th style="width:25%">Tipe</th>
-            <th style="width:20%">Wajib</th>
+            <th style="width:30%">Label</th>
+            <th style="width:22%">Tipe</th>
+            <th style="width:30%">Pilihan (khusus tipe dropdown)</th>
+            <th style="width:10%">Wajib</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @php($rows = old('fields', $jenisSurat->fields ?? []))
+        @php($rows = is_array($r = old('fields', $jenisSurat->fields ?? [])) ? $r : [])
         @forelse ($rows as $i => $f)
+            @php($opts = is_array($f['options'] ?? null) ? implode(', ', $f['options']) : ($f['options'] ?? ''))
             <tr>
-                <td><input type="text" name="fields[{{ $i }}][label]" class="form-control form-control-sm"
-                        value="{{ $f['label'] ?? '' }}"></td>
                 <td>
-                    <select name="fields[{{ $i }}][type]" class="form-control form-control-sm">
-                        @foreach (['text' => 'Teks', 'textarea' => 'Teks Panjang', 'date' => 'Tanggal', 'number' => 'Angka', 'anak_kk' => 'Anak (satu KK)'] as $val => $lbl)
+                    {{-- Nama field (placeholder ${...}) dikunci agar tidak berubah saat labelnya disunting. --}}
+                    <input type="hidden" name="fields[{{ $i }}][name]" value="{{ $f['name'] ?? '' }}">
+                    <input type="text" name="fields[{{ $i }}][label]" class="form-control form-control-sm"
+                        value="{{ $f['label'] ?? '' }}">
+                    @if (!empty($f['name']))
+                        <small class="text-muted" style="font-size:0.75rem;">Placeholder:
+                            <code>${{ '{' . $f['name'] . '}' }}</code></small>
+                    @endif
+                </td>
+                <td>
+                    <select name="fields[{{ $i }}][type]" class="form-control form-control-sm field-type">
+                        @foreach (\App\Models\JenisSurat::FIELD_TYPE_LABELS as $val => $lbl)
                             <option value="{{ $val }}" @selected(($f['type'] ?? 'text') === $val)>{{ $lbl }}</option>
                         @endforeach
                     </select>
                 </td>
+                <td><input type="text" name="fields[{{ $i }}][options]" class="form-control form-control-sm field-options"
+                        value="{{ $opts }}" placeholder="Ya, Tidak"
+                        @style(['display:none' => ($f['type'] ?? 'text') !== 'select'])></td>
                 <td><input type="checkbox" name="fields[{{ $i }}][required]" value="1" @checked($f['required'] ?? false)>
                 </td>
                 <td><button type="button" class="btn btn-xs btn-danger" onclick="this.closest('tr').remove()"><i
@@ -97,19 +133,37 @@
 @push('scripts')
     <script>
         let idx = {{ count($rows) }};
+        const typeOptions = @json(\App\Models\JenisSurat::FIELD_TYPE_LABELS);
+
+        // Kolom "Pilihan" hanya relevan untuk tipe select — sembunyikan untuk tipe lain.
+        function syncOptionsColumn(row) {
+            const type = row.querySelector('.field-type');
+            const options = row.querySelector('.field-options');
+            if (!type || !options) return;
+            options.style.display = type.value === 'select' ? '' : 'none';
+        }
+
+        document.querySelector('#fields-table tbody').addEventListener('change', function (e) {
+            if (e.target.classList.contains('field-type')) syncOptionsColumn(e.target.closest('tr'));
+        });
+
         document.getElementById('add-field').addEventListener('click', function () {
             const tr = document.createElement('tr');
+            const opsi = Object.entries(typeOptions)
+                .map(([val, lbl]) => `<option value="${val}">${lbl}</option>`).join('');
             tr.innerHTML = `
-                <td><input type="text" name="fields[${idx}][label]" class="form-control form-control-sm"></td>
-                <td><select name="fields[${idx}][type]" class="form-control form-control-sm">
-                    <option value="text">Teks</option><option value="textarea">Teks Panjang</option>
-                    <option value="date">Tanggal</option><option value="number">Angka</option>
-                    <option value="anak_kk">Anak (satu KK)</option></select></td>
+                <td><input type="hidden" name="fields[${idx}][name]" value="">
+                    <input type="text" name="fields[${idx}][label]" class="form-control form-control-sm"></td>
+                <td><select name="fields[${idx}][type]" class="form-control form-control-sm field-type">${opsi}</select></td>
+                <td><input type="text" name="fields[${idx}][options]" class="form-control form-control-sm field-options" placeholder="Ya, Tidak" style="display:none"></td>
                 <td><input type="checkbox" name="fields[${idx}][required]" value="1"></td>
                 <td><button type="button" class="btn btn-xs btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>`;
             document.querySelector('#fields-table tbody').appendChild(tr);
             idx++;
         });
+
+        document.querySelectorAll('#fields-table tbody tr').forEach(syncOptionsColumn);
+
         const tpl = document.getElementById('template');
         if (tpl) tpl.addEventListener('change', e => e.target.nextElementSibling.textContent = e.target.files[0]?.name || 'Pilih berkas .docx...');
     </script>

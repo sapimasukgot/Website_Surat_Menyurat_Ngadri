@@ -41,9 +41,15 @@ class JenisSuratSeeder extends Seeder
         ]);
     }
 
-    private function t(string $name, string $label, string $type = 'text', bool $required = false): array
+    private function t(string $name, string $label, string $type = 'text', bool $required = false, array $options = []): array
     {
-        return ['name' => $name, 'label' => $label, 'type' => $type, 'required' => $required];
+        $field = ['name' => $name, 'label' => $label, 'type' => $type, 'required' => $required];
+
+        if ($type === 'select') {
+            $field['options'] = $options ?: ['Ya', 'Tidak'];
+        }
+
+        return $field;
     }
 
     private function data(): array
@@ -52,6 +58,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Tidak Mampu (SKTM)',
                 'kode_surat' => 'SKTM',
+                'kode_klasifikasi' => '420',
                 'deskripsi' => 'Menerangkan warga tergolong keluarga kurang/tidak mampu.',
                 'is_active' => true,
                 'fields' => [
@@ -63,6 +70,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'SKTM untuk Pemasangan Listrik PLN Gratis',
                 'kode_surat' => 'SKTM-PLN',
+                'kode_klasifikasi' => '400',
                 'deskripsi' => 'SKTM khusus permohonan pemasangan sambungan listrik PLN gratis.',
                 'is_active' => true,
                 'fields' => [
@@ -73,6 +81,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'SKTM untuk Beasiswa / Sekolah Anak',
                 'kode_surat' => 'SKTM-BEA',
+                'kode_klasifikasi' => '422.5',
                 'deskripsi' => 'SKTM untuk pengajuan beasiswa/keringanan biaya sekolah anak.',
                 'is_active' => true,
                 'fields' => [
@@ -84,6 +93,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Domisili',
                 'kode_surat' => 'SKD',
+                'kode_klasifikasi' => '470',
                 'deskripsi' => 'Menerangkan tempat tinggal / domisili warga.',
                 'is_active' => true,
                 'fields' => [
@@ -94,6 +104,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Usaha (SKU)',
                 'kode_surat' => 'SKU',
+                'kode_klasifikasi' => '470',
                 'deskripsi' => 'Menerangkan warga memiliki usaha.',
                 'is_active' => true,
                 'fields' => [
@@ -106,6 +117,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Domisili Usaha',
                 'kode_surat' => 'SKDU',
+                'kode_klasifikasi' => '470',
                 'deskripsi' => 'Menerangkan domisili/lokasi usaha warga.',
                 'is_active' => true,
                 'fields' => [
@@ -118,6 +130,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Kematian',
                 'kode_surat' => 'SKM',
+                'kode_klasifikasi' => null,
                 'deskripsi' => 'Menerangkan peristiwa kematian warga.',
                 'is_active' => true,
                 'fields' => [
@@ -131,6 +144,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Kelahiran',
                 'kode_surat' => 'SKL',
+                'kode_klasifikasi' => '474.1',
                 'deskripsi' => 'Menerangkan peristiwa kelahiran.',
                 'is_active' => true,
                 'fields' => [
@@ -147,6 +161,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Kehilangan',
                 'kode_surat' => 'SKH',
+                'kode_klasifikasi' => '470',
                 'deskripsi' => 'Menerangkan kehilangan barang/dokumen.',
                 'is_active' => true,
                 'fields' => [
@@ -159,6 +174,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Belum Menikah',
                 'kode_surat' => 'SKBM',
+                'kode_klasifikasi' => '470',
                 'deskripsi' => 'Menerangkan warga belum pernah menikah.',
                 'is_active' => true,
                 'fields' => [
@@ -169,6 +185,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan (Umum)',
                 'kode_surat' => 'SK',
+                'kode_klasifikasi' => '470',
                 'deskripsi' => 'Surat keterangan umum dengan isi bebas.',
                 'is_active' => true,
                 'fields' => [
@@ -179,6 +196,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Pengantar SKCK',
                 'kode_surat' => 'SKCK',
+                'kode_klasifikasi' => null,
                 'deskripsi' => 'Surat pengantar untuk pembuatan SKCK di kepolisian.',
                 'is_active' => true,
                 'fields' => [
@@ -190,19 +208,48 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Izin Keramaian',
                 'kode_surat' => 'SIK',
-                'deskripsi' => 'Izin penyelenggaraan keramaian / acara.',
+                'kode_klasifikasi' => '470',
+                'deskripsi' => 'Izin penyelenggaraan keramaian / acara, dengan atau tanpa hiburan.',
                 'is_active' => true,
                 'fields' => [
-                    $this->t('nama_acara', 'Nama / Jenis Acara', 'text', true),
+                    $this->t('nama_acara', 'Nama / Jenis Acara (Hajat)', 'text', true),
                     $this->t('tempat_acara', 'Tempat Acara', 'text', true),
                     $this->t('tanggal_acara', 'Hari / Tanggal Acara', 'date', true),
                     $this->t('waktu_acara', 'Waktu Acara'),
+                    // Bila "Ya", blok ${hiburan} ... ${/hiburan} pada template
+                    // (surat pernyataan panitia penyelenggara hiburan) ikut tercetak.
+                    $this->t('hiburan', 'Ada Hiburan?', 'select', true, ['Ya', 'Tidak']),
+                    $this->t('jenis_hiburan', 'Jenis Hiburan (mis. Orkes Melayu)'),
+                    $this->t('nama_organisasi', 'Nama Organisasi / Grup Hiburan'),
+                    $this->t('nama_ketua', 'Nama Ketua Panitia'),
+                    $this->t('wakil_ketua', 'Nama Wakil Ketua Panitia'),
+                    $this->t('sekretaris', 'Nama Sekretaris Panitia'),
+                    $this->t('hari_hiburan', 'Hari Pelaksanaan Hiburan'),
+                    $this->t('tanggal_hiburan', 'Tanggal Pelaksanaan Hiburan', 'date'),
+                    $this->t('jam_hiburan', 'Jam Pelaksanaan Hiburan'),
+                    $this->t('tempat_hiburan', 'Tempat Pelaksanaan Hiburan'),
                     $this->t('keperluan', 'Keperluan'),
+                ],
+            ],
+            [
+                'nama_surat' => 'Surat Keterangan Kepergian Anggota Keluarga',
+                'kode_surat' => 'SKKP',
+                'kode_klasifikasi' => '470',
+                'deskripsi' => 'Menerangkan suami/istri/ibu pemohon sedang pergi bekerja ke luar daerah atau luar negeri.',
+                'is_active' => true,
+                'fields' => [
+                    $this->t('hubungan_keluarga', 'Hubungan Keluarga yang Pergi', 'select', true, ['Suami', 'Istri', 'Ibu']),
+                    $this->t('nama_yang_pergi', 'Nama yang Bersangkutan', 'text', true),
+                    $this->t('alamat_yang_pergi', 'Alamat / Dusun yang Bersangkutan', 'textarea'),
+                    $this->t('tujuan_kepergian', 'Tujuan Kepergian (kota / negara)', 'text', true),
+                    $this->t('sejak', 'Pergi Sejak (bulan / tahun)', 'text', true),
+                    $this->t('keperluan', 'Keperluan Surat', 'textarea', true),
                 ],
             ],
             [
                 'nama_surat' => 'Surat Keterangan Ahli Waris',
                 'kode_surat' => 'SKAW',
+                'kode_klasifikasi' => '470',
                 'deskripsi' => 'Menerangkan ahli waris yang sah.',
                 'is_active' => true,
                 'fields' => [
@@ -214,6 +261,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Tanah',
                 'kode_surat' => 'SKT',
+                'kode_klasifikasi' => '590',
                 'deskripsi' => 'Menerangkan kepemilikan/penguasaan tanah.',
                 'is_active' => true,
                 'fields' => [
@@ -226,6 +274,7 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Penghasilan',
                 'kode_surat' => 'SKP',
+                'kode_klasifikasi' => '422.5',
                 'deskripsi' => 'Menerangkan penghasilan warga.',
                 'is_active' => true,
                 'fields' => [
@@ -236,6 +285,9 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Keterangan Boro Bekerja',
                 'kode_surat' => 'SKBK',
+                // Kode klasifikasi belum diberikan kantor desa — bisa diisi
+                // sendiri kapan saja lewat menu Jenis Surat.
+                'kode_klasifikasi' => null,
                 'deskripsi' => 'Keterangan warga yang merantau/boro bekerja ke luar daerah.',
                 'is_active' => true,
                 'fields' => [
@@ -249,7 +301,8 @@ class JenisSuratSeeder extends Seeder
             [
                 'nama_surat' => 'Surat Pernyataan',
                 'kode_surat' => 'SPN',
-                'deskripsi' => 'Surat pernyataan pribadi warga.',
+                'kode_klasifikasi' => null,
+                'deskripsi' => 'Surat pernyataan pribadi warga. Umumnya dicetak tanpa kop — hilangkan centang "Gunakan kop surat" saat membuat surat.',
                 'is_active' => true,
                 'fields' => [
                     $this->t('isi_pernyataan', 'Isi Pernyataan', 'textarea', true),
