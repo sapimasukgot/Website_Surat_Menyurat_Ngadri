@@ -41,6 +41,14 @@ class Penduduk extends Model
         'Orang Tua', 'Mertua', 'Famili Lain', 'Pembantu', 'Lainnya',
     ];
 
+    public const KELOMPOK_USIA = [
+        'balita' => ['label' => 'Balita (0-5 th)', 'min' => 0, 'max' => 5],
+        'anak' => ['label' => 'Anak (6-12 th)', 'min' => 6, 'max' => 12],
+        'remaja' => ['label' => 'Remaja (13-17 th)', 'min' => 13, 'max' => 17],
+        'dewasa' => ['label' => 'Dewasa (18-59 th)', 'min' => 18, 'max' => 59],
+        'lansia' => ['label' => 'Lansia (60+ th)', 'min' => 60, 'max' => null],
+    ];
+
     public function surats(): HasMany
     {
         return $this->hasMany(Surat::class);
@@ -87,9 +95,28 @@ class Penduduk extends Model
 
     public function scopeFilter(Builder $query, array $filters): Builder
     {
-        foreach (['dusun', 'rt', 'rw', 'jenis_kelamin', 'agama'] as $key) {
+        foreach ([
+            'dusun', 'rt', 'rw', 'jenis_kelamin', 'agama',
+            'pendidikan', 'pekerjaan', 'status_kawin', 'golongan_darah', 'status_hubungan',
+        ] as $key) {
             $query->when($filters[$key] ?? null, fn (Builder $q, $value) => $q->where($key, $value));
         }
+
+        $query->when($filters['kelompok_usia'] ?? null, function (Builder $q, $key) {
+            $range = self::KELOMPOK_USIA[$key] ?? null;
+
+            if (! $range) {
+                return;
+            }
+
+            $today = now();
+            $q->whereNotNull('tanggal_lahir')
+                ->where('tanggal_lahir', '<=', $today->copy()->subYears($range['min'])->toDateString());
+
+            if (! is_null($range['max'])) {
+                $q->where('tanggal_lahir', '>', $today->copy()->subYears($range['max'] + 1)->toDateString());
+            }
+        });
 
         return $query;
     }

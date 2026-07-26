@@ -29,7 +29,7 @@
                 <a href="{{ route('penduduk.import.form') }}" class="header-btn btn-import">
                     <i class="fas fa-file-import"></i> Import
                 </a>
-                <a href="{{ route('penduduk.export') }}" class="header-btn btn-export">
+                <a href="{{ route('penduduk.export', request()->query()) }}" class="header-btn btn-export">
                     <i class="fas fa-file-excel"></i> Export
                 </a>
                 <a href="{{ route('penduduk.export.adminduk') }}" class="header-btn btn-export"
@@ -41,6 +41,10 @@
 
         <div class="feature-card-body">
             {{-- Filter Bar --}}
+            @php
+                $advancedKeys = ['agama', 'pendidikan', 'pekerjaan', 'status_kawin', 'golongan_darah', 'status_hubungan', 'kelompok_usia'];
+                $advancedActive = collect($advancedKeys)->contains(fn ($k) => filled(request($k)));
+            @endphp
             <form method="GET">
                 <div class="filter-bar">
                     <div class="filter-group">
@@ -68,9 +72,83 @@
                     <div class="filter-actions">
                         <button type="submit" class="btn btn-filter"><i class="fas fa-search"></i> Cari</button>
                         <a href="{{ route('penduduk.index') }}" class="btn btn-reset">Reset</a>
+                        <button type="button" class="btn btn-reset" id="toggleAdvancedFilters"
+                            aria-expanded="{{ $advancedActive ? 'true' : 'false' }}">
+                            <i class="fas fa-sliders-h"></i> Filter Lanjutan
+                        </button>
+                    </div>
+
+                    <div id="advancedFilters" style="width:100%;flex-wrap:wrap;gap:0.75rem 1rem;display:{{ $advancedActive ? 'flex' : 'none' }};">
+                        <div class="filter-group">
+                            <label>Agama</label>
+                            <select name="agama" class="form-control">
+                                <option value="">Semua</option>
+                                @foreach (\App\Models\Penduduk::AGAMA as $a)
+                                    <option value="{{ $a }}" @selected(request('agama') === $a)>{{ $a }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Pendidikan</label>
+                            <select name="pendidikan" class="form-control">
+                                <option value="">Semua</option>
+                                @foreach ($pendidikanList as $p)
+                                    <option value="{{ $p }}" @selected(request('pendidikan') === $p)>{{ $p }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Pekerjaan</label>
+                            <select name="pekerjaan" class="form-control">
+                                <option value="">Semua</option>
+                                @foreach ($pekerjaanList as $p)
+                                    <option value="{{ $p }}" @selected(request('pekerjaan') === $p)>{{ $p }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status Perkawinan</label>
+                            <select name="status_kawin" class="form-control">
+                                <option value="">Semua</option>
+                                @foreach (\App\Models\Penduduk::STATUS_KAWIN as $s)
+                                    <option value="{{ $s }}" @selected(request('status_kawin') === $s)>{{ $s }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Golongan Darah</label>
+                            <select name="golongan_darah" class="form-control">
+                                <option value="">Semua</option>
+                                @foreach (\App\Models\Penduduk::GOLONGAN_DARAH as $g)
+                                    <option value="{{ $g }}" @selected(request('golongan_darah') === $g)>{{ $g }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status Hubungan (KK)</label>
+                            <select name="status_hubungan" class="form-control">
+                                <option value="">Semua</option>
+                                @foreach (\App\Models\Penduduk::STATUS_HUBUNGAN as $s)
+                                    <option value="{{ $s }}" @selected(request('status_hubungan') === $s)>{{ $s }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Kelompok Usia</label>
+                            <select name="kelompok_usia" class="form-control">
+                                <option value="">Semua</option>
+                                @foreach (\App\Models\Penduduk::KELOMPOK_USIA as $key => $u)
+                                    <option value="{{ $key }}" @selected(request('kelompok_usia') === $key)>{{ $u['label'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
             </form>
+            <p class="text-muted small mb-3" style="margin-top:-0.75rem;">
+                Tip: kombinasikan <strong>Status Hubungan = Kepala Keluarga</strong> dengan <strong>Jenis Kelamin</strong>
+                untuk melihat jumlah kepala keluarga laki-laki atau perempuan.
+            </p>
 
             {{-- Table --}}
             <div class="table-responsive">
@@ -142,3 +220,14 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('toggleAdvancedFilters').addEventListener('click', function () {
+            var panel = document.getElementById('advancedFilters');
+            var isHidden = panel.style.display === 'none';
+            panel.style.display = isHidden ? 'flex' : 'none';
+            this.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+        });
+    </script>
+@endpush

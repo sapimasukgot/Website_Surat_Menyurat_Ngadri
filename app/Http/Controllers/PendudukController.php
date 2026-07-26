@@ -21,6 +21,12 @@ class PendudukController extends Controller
 
     private const SORTABLE = ['nama_lengkap', 'nik', 'dusun', 'created_at'];
 
+    private const FILTERABLE = [
+        'dusun', 'rt', 'rw', 'jenis_kelamin', 'agama',
+        'pendidikan', 'pekerjaan', 'status_kawin', 'golongan_darah',
+        'status_hubungan', 'kelompok_usia',
+    ];
+
     public function index(Request $request): View
     {
         $sort = in_array($request->get('sort'), self::SORTABLE, true) ? $request->get('sort') : 'nama_lengkap';
@@ -28,14 +34,18 @@ class PendudukController extends Controller
 
         $penduduks = Penduduk::query()
             ->search($request->get('q'))
-            ->filter($request->only(['dusun', 'rt', 'rw', 'jenis_kelamin', 'agama']))
+            ->filter($request->only(self::FILTERABLE))
             ->orderBy($sort, $direction)
             ->paginate($request->integer('per_page', 15))
             ->withQueryString();
 
         $dusunList = Penduduk::query()->whereNotNull('dusun')->distinct()->orderBy('dusun')->pluck('dusun');
+        $pendidikanList = Penduduk::query()->whereNotNull('pendidikan')->distinct()->orderBy('pendidikan')->pluck('pendidikan');
+        $pekerjaanList = Penduduk::query()->whereNotNull('pekerjaan')->distinct()->orderBy('pekerjaan')->pluck('pekerjaan');
 
-        return view('penduduk.index', compact('penduduks', 'sort', 'direction', 'dusunList'));
+        return view('penduduk.index', compact(
+            'penduduks', 'sort', 'direction', 'dusunList', 'pendidikanList', 'pekerjaanList'
+        ));
     }
 
     public function create(): View
@@ -112,11 +122,14 @@ class PendudukController extends Controller
         ))->with('import_log_id', $log->id);
     }
 
-    public function export(): BinaryFileResponse
+    public function export(Request $request): BinaryFileResponse
     {
         $filename = 'data-penduduk-'.now()->format('Ymd-His').'.xlsx';
 
-        return Excel::download(new PendudukExport(), $filename);
+        $search = $request->get('q');
+        $filters = $request->only(self::FILTERABLE);
+
+        return Excel::download(new PendudukExport($filters, $search), $filename);
     }
 
     /**

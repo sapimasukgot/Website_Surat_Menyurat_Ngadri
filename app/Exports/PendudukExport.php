@@ -11,9 +11,18 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PendudukExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
+    public function __construct(
+        private readonly array $filters = [],
+        private readonly ?string $search = null,
+    ) {
+    }
+
     public function query()
     {
-        return Penduduk::query()->orderBy('nama_lengkap');
+        return Penduduk::query()
+            ->search($this->search)
+            ->filter($this->filters)
+            ->orderBy('nama_lengkap');
     }
 
     public function headings(): array
