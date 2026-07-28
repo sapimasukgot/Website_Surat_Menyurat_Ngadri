@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -177,23 +178,31 @@ class SuratController extends Controller
 
         $dataSurat = $this->buildSnapshot($penduduk, $jenis, $request->input('data', []), $role);
 
-        // Dua staf yang submit persis di detik yang sama secara teori bisa dapat
-        // nomor urut yang sama (race condition ringan sebelum insert). Kalau itu
-        // terjadi, database akan menolak lewat unique constraint — coba lagi
-        // dengan nomor baru beberapa kali alih-alih menampilkan halaman error.
+        // Pengambilan nomor urut dikunci di dalam transaksi (lockForUpdate) supaya
+        // dua staf yang menyimpan surat pada saat yang sama tidak bisa membaca
+        // nomor tertinggi yang sama lalu menghasilkan nomor kembar.
         $percobaan = 0;
+        $minimal = 1;
 
         do {
             try {
-                $surat = Surat::create([
-                    'nomor_surat' => $this->nomorService->generate($jenis, $tanggal),
-                    'jenis_surat_id' => $jenis->id,
-                    'penduduk_id' => $penduduk->id,
-                    'user_id' => $request->user()->id,
-                    'tanggal_surat' => $tanggal,
-                    'pakai_kop' => $request->boolean('pakai_kop'),
-                    'data_surat' => $dataSurat,
-                ]);
+                $surat = DB::transaction(function () use ($jenis, $penduduk, $tanggal, $request, $dataSurat, &$minimal) {
+                    // Satu nomor urut berjalan dipakai bersama semua jenis surat,
+                    // melanjutkan dari angka tertinggi yang terpakai tahun ini.
+                    $urut = max($this->nomorService->nextUrut((int) $tanggal->year, kunci: true), $minimal);
+                    $minimal = $urut + 1;
+
+                    return Surat::create([
+                        'nomor_surat' => $this->nomorService->format($jenis, $tanggal, $urut),
+                        'nomor_urut' => $urut,
+                        'jenis_surat_id' => $jenis->id,
+                        'penduduk_id' => $penduduk->id,
+                        'user_id' => $request->user()->id,
+                        'tanggal_surat' => $tanggal,
+                        'pakai_kop' => $request->boolean('pakai_kop'),
+                        'data_surat' => $dataSurat,
+                    ]);
+                });
 
                 break;
             } catch (QueryException $e) {
@@ -201,7 +210,10 @@ class SuratController extends Controller
                 $isDuplikat = str_contains(strtolower($e->getMessage()), 'nomor_surat')
                     || (int) ($e->errorInfo[1] ?? 0) === 1062;
 
-                if (!$isDuplikat || $percobaan >= 3) {
+                // $minimal sudah dinaikkan di dalam transaksi, jadi percobaan
+                // berikutnya pasti memakai nomor yang lebih tinggi — tidak
+                // mengulang nomor yang sama seperti sebelumnya.
+                if (!$isDuplikat || $percobaan >= 5) {
                     throw $e;
                 }
             }
@@ -239,14 +251,53 @@ class SuratController extends Controller
             'penandatangan_role' => $role,
         ]);
 
+        // Rapikan nomor yang diketik manual (spasi/garis miring ganda) supaya yang
+        // tersimpan & tercetak konsisten dengan nomor yang dibuat otomatis.
+        $nomor = $this->nomorService->rapikan((string) $request->input('nomor_surat'));
+        $tanggal = Carbon::parse($request->input('tanggal_surat'));
+
+        // Nomor urut dibaca ulang dari nomor surat yang disunting operator. Karena
+        // nomor berikutnya selalu mengambil angka tertinggi tahun itu, menyunting
+        // nomor ke angka yang lebih besar otomatis menjadikannya patokan baru.
+        $urutSebelum = $surat->nomor_urut;
+        $nomorBerubah = $nomor !== $this->nomorService->rapikan((string) $surat->nomor_surat);
+
+        // Nomor urut HANYA dibaca ulang kalau nomornya benar-benar diubah. Kalau
+        // operator cuma menyunting isi surat, angka urut yang sudah tersimpan
+        // dibiarkan apa adanya — pembacaan ulang di situ tidak divalidasi dan
+        // bisa menggeser patokan nomor tanpa disadari (mis. bila kode klasifikasi
+        // jenis suratnya sempat diubah setelah nomor ini terbit).
+        $urut = $nomorBerubah
+            ? $this->nomorService->bacaUrut($nomor, $surat->jenisSurat)
+            : $surat->nomor_urut;
+
         $surat->update([
-            'nomor_surat' => $request->input('nomor_surat'),
-            'tanggal_surat' => Carbon::parse($request->input('tanggal_surat')),
+            'nomor_surat' => $nomor,
+            'nomor_urut' => $urut ?? $surat->nomor_urut,
+            'tanggal_surat' => $tanggal,
             'pakai_kop' => $request->boolean('pakai_kop'),
             'data_surat' => $data,
         ]);
 
-        return redirect()->route('surat.show', $surat)->with('success', 'Isi surat berhasil disimpan.');
+        $pesan = 'Isi surat berhasil disimpan.';
+
+        if ($urut === null && $nomorBerubah) {
+            // Nomor tersimpan apa adanya, tapi angka urutnya tidak terbaca sehingga
+            // tidak bisa dipakai sebagai patokan — operator perlu tahu.
+            return redirect()->route('surat.show', $surat)
+                ->with('success', $pesan)
+                ->with('warning', 'Angka nomor urut pada "'.$nomor.'" tidak terbaca, jadi nomor ini tidak '
+                    .'dijadikan patokan untuk surat berikutnya. Pastikan susunannya mengikuti format resmi.');
+        }
+
+        // Beri tahu operator kalau suntingan nomor tadi menaikkan patokan nomor urut.
+        if ($urut !== null && $urut !== $urutSebelum
+            && $urut > $this->nomorService->urutTertinggi((int) $tanggal->year, $surat->id)) {
+            $pesan .= ' Nomor urut '.$urut.' kini menjadi patokan — surat berikutnya melanjutkan dari '
+                .($urut + 1).'.';
+        }
+
+        return redirect()->route('surat.show', $surat)->with('success', $pesan);
     }
 
     public function generate(Surat $surat): RedirectResponse

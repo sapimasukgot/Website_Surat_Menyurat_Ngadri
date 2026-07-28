@@ -166,10 +166,26 @@ Identitas desa diatur di berkas `.env` (`DESA_NAMA`, `DESA_KECAMATAN`, `DESA_KAB
 
 ## Penomoran Surat
 
-Format: `{urut}/{kode_surat}/{kode_desa}/{bulan_romawi}/{tahun}`
-Contoh: `001/SKTM/DS-NGD/VII/2026`
+Format resmi: `{kode_klasifikasi}/{urut3}/{kode_desa}/{tahun}`
+Contoh: `470/001/409.40.13/2026`
 
-Nomor urut dihitung per jenis surat per tahun.
+Format diatur di `config/nomor_surat.php`. Kode klasifikasi arsip diisi per jenis
+surat lewat menu **Jenis Surat**; bila dikosongkan, segmennya otomatis dibuang.
+
+**Nomor urut** adalah **satu urutan berjalan yang dipakai bersama oleh seluruh
+surat keluar** — tidak dipisah per jenis surat maupun per kode klasifikasi,
+sesuai buku agenda surat kantor desa. Aturannya:
+
+- Nomor berikutnya = nomor urut **tertinggi** yang terpakai pada tahun tanggal
+  surat, ditambah satu. Surat yang dihapus tetap diperhitungkan agar nomornya
+  tidak dipakai ulang.
+- Bila operator menyunting nomor surat secara manual ke angka yang **lebih
+  tinggi**, angka itu otomatis menjadi **patokan baru** dan surat berikutnya
+  melanjutkan dari sana (berguna saat menyelaraskan dengan buku agenda manual).
+- **Ganti tahun → otomatis kembali ke 001**, tanpa reset manual.
+- Angka urut disimpan di kolom `surats.nomor_urut`, dan pengambilannya dikunci
+  di dalam transaksi (`lockForUpdate`) sehingga dua operator yang menyimpan
+  bersamaan tidak mendapat nomor kembar.
 
 ---
 

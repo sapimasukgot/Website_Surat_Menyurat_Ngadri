@@ -16,7 +16,7 @@ class Surat extends Model
     protected $table = 'surats';
 
     protected $fillable = [
-        'nomor_surat', 'jenis_surat_id', 'penduduk_id', 'user_id',
+        'nomor_surat', 'nomor_urut', 'jenis_surat_id', 'penduduk_id', 'user_id',
         'tanggal_surat', 'pakai_kop', 'data_surat', 'file_path', 'keterangan',
     ];
 
@@ -24,6 +24,7 @@ class Surat extends Model
     {
         return [
             'tanggal_surat' => 'date',
+            'nomor_urut' => 'integer',
             'pakai_kop' => 'boolean',
             'data_surat' => 'array',
         ];

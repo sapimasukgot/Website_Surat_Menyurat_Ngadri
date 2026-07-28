@@ -22,8 +22,8 @@
             value="{{ old('kode_klasifikasi', $jenisSurat->kode_klasifikasi) }}" placeholder="mis. 470">
         @error('kode_klasifikasi') <span class="invalid-feedback">{{ $message }}</span> @enderror
         <small class="form-text text-muted">Angka klasifikasi arsip yang muncul di
-            <strong>awal nomor surat</strong> (mis. <code>470</code>, <code>422.5</code>). Kosongkan bila jenis surat ini
-            tidak memakainya.</small>
+            <strong>awal nomor surat</strong> (mis. <code>470</code>, <code>422.5</code>). Hanya angka dan titik.
+            Kosongkan bila jenis surat ini tidak memakainya.</small>
     </div>
 </div>
 

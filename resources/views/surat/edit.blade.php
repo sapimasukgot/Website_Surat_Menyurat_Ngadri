@@ -28,6 +28,11 @@
                                     class="form-control @error('nomor_surat') is-invalid @enderror"
                                     value="{{ old('nomor_surat', $surat->nomor_surat) }}" required>
                                 @error('nomor_surat') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                <small class="form-text text-muted">Nomor urut
+                                    @if ($surat->nomor_urut)<strong>{{ $surat->nomor_urut }}</strong>@endif
+                                    berjalan bersama untuk <strong>semua jenis surat</strong>. Bila diubah ke angka yang
+                                    lebih tinggi, angka itu menjadi patokan baru dan surat berikutnya melanjutkan dari
+                                    sana. Nomor urut otomatis kembali ke 001 setiap awal tahun.</small>
                             </div>
                             <div class="form-group col-md-5">
                                 <label>Tanggal Surat</label>

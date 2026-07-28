@@ -6,6 +6,7 @@ use App\Models\JenisSurat;
 use App\Models\Penduduk;
 use App\Models\Surat;
 use App\Models\User;
+use App\Services\NomorSuratService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -128,6 +129,16 @@ class SuratImport implements ToCollection
 
         $surat = Surat::withTrashed()->where('nomor_surat', $nomor)->first();
 
+        // Nomor urut dibaca ulang dari nomor suratnya. Tanpa ini, surat hasil
+        // restore tidak terhitung saat menentukan nomor urut berikutnya —
+        // penomoran bisa mundur dan menabrak nomor yang sudah pernah terpakai.
+        // Kalau tidak terbaca, nilai yang sudah ada JANGAN ditimpa jadi kosong.
+        $urut = $this->bacaUrut($nomor, $jenis) ?? $surat?->nomor_urut;
+
+        if ($urut !== null) {
+            $attributes['nomor_urut'] = $urut;
+        }
+
         if ($surat) {
             if ($surat->trashed()) {
                 $surat->restore();
@@ -149,6 +160,17 @@ class SuratImport implements ToCollection
         $isNew ? $this->inserted++ : $this->updated++;
 
         return null;
+    }
+
+    /**
+     * Nomor urut dari nomor surat, dibatasi ke rentang yang wajar supaya angka
+     * hasil salah baca tidak menjadi patokan penomoran berikutnya.
+     */
+    private function bacaUrut(string $nomor, JenisSurat $jenis): ?int
+    {
+        $urut = app(NomorSuratService::class)->bacaUrut($nomor, $jenis);
+
+        return $urut !== null && $urut >= 1 && $urut <= 99999 ? $urut : null;
     }
 
     private function parseDataSurat(mixed $raw): ?array

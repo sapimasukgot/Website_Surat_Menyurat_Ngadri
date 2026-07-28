@@ -24,7 +24,7 @@
             </div>
 
             <div class="brand-showcase-footer" style="position: absolute; bottom: 20px; left: 40px;">
-                &copy; 2026 {{ config('desa.nama') }}. All rights reserved.
+                &copy; 2026 {{ config('desa.nama') }}.<br>Dibuat oleh Kelompok 32 MMD Filkom UB 2026.</br>
             </div>
         </div>
 

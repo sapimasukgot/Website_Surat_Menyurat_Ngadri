@@ -17,7 +17,9 @@ class StoreJenisSuratRequest extends FormRequest
         return [
             'nama_surat' => ['required', 'string', 'max:150'],
             'kode_surat' => ['required', 'string', 'max:20', Rule::unique('jenis_surats', 'kode_surat')->whereNull('deleted_at')],
-            'kode_klasifikasi' => ['nullable', 'string', 'max:20'],
+            // Hanya angka dan titik (mis. 470, 422.5). Garis miring dilarang karena
+            // akan merusak susunan segmen nomor surat.
+            'kode_klasifikasi' => ['nullable', 'string', 'max:20', 'regex:/^[0-9]+(\.[0-9]+)*$/'],
             'deskripsi' => ['nullable', 'string', 'max:500'],
             'is_active' => ['nullable', 'boolean'],
             'template' => [
